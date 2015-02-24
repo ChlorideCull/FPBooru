@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <!-- Copyright (c) Sebastian Johansson, 2015 -->
+    <!--           All Rights Reserved           -->
+<head>
+	<title>FPBooru</title>
+	<link rel="stylesheet" type="text/css" href="static/central.css">
+	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="static/logic.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+	<header>
+        <div class="content">
+		  <p>Booru</p>
+		  <form action="search" method="get">
+              <input type="text" name="search" placeholder="Search"/>
+			 <input type="submit" value="&gt;" />
+		  </form>
+        </div>
+	</header>
+	<div id="nav">
+        <div class="leftAlign">
+            <a href="index.html">Front Page</a>
+            <a href="artists.html">Artist Directory</a>
+            <a href="#">Filtered</a>
+            <a href="about.html">About</a>
+        </div>
+        <div class="rightAlign">
+            <!--<a class="noButton" href="/user/">Hello, %whoami%!</a>-->
+            <a class="alignRight" onclick="doLogin()">Login</a>
+        </div>
+	</div>
+	<noscript>
+		<div id="nswarning">
+			<a>You can browse images without JavaScript, but to use account features you need to enable it!</a>
+		</div>
+    </noscript>
+    <div id="overlay">
+	   <div id="logbox">
+           <div class="titleBar"><a onclick="noLogin()">X</a></div>
+           <form action="login" method="post">
+               Username: <input type="text" name="user" />
+               Password: <input type="password" name="pass" />
+               <input type="submit" value="Login" />
+           </form>
+	   </div>
+    </div>
+    <div id="body-class">

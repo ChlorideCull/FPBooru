@@ -1,0 +1,280 @@
+/* BEGIN template.ppcss */
+/* Copyright (c) Sebastian Johansson, 2015
+           All Rights Reserved             */
+
+@import url(http://fonts.googleapis.com/css?family=Roboto:300);
+
+html, body {
+	margin: 0px;
+    min-width: 320px;
+}
+
+body {
+	background-color: #B7D0FF;
+}
+
+a, p {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 400;
+}
+
+header {
+	font-size: 30px;
+	height: 100px;
+	width: 100%;
+	
+	display: flex;
+	align-items: center;
+	flex-wrap: nowrap;
+	justify-content: flex-end;
+	
+	background: url('headers/257994.png');
+	color: #FFF;
+}
+
+header>.content {
+    height: 100%;
+    margin-right: 0px;
+    text-align: right;
+    
+    padding-left: 50px;
+    
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    
+    background: linear-gradient(to right, rgba(0,136,255,0) 0%,rgba(0,136,255,1) 17%,rgba(0,136,255,1) 100%);
+}
+
+header>.content>* {
+    align-self: center;
+}
+
+@media (max-device-width:500px) {
+    header {
+        justify-content: center;
+    }
+	header>.content {
+		flex-direction: column !important;
+        background: linear-gradient(to right, rgba(0,136,255,0) 0%,rgba(0,136,255,1) 33%,rgba(0,136,255,1) 66%,rgba(0,136,255,0) 100%) !important;
+      padding-right: 50px;
+	}
+}
+
+header * {
+	display: inline;
+	margin: 10px;
+}
+
+header>form {
+	display: flex;
+	justify-self: flex-end;
+	align-content: center;
+}
+
+form>input[type="text"], form>input[type="password"] {
+	width: 150px;
+}
+
+header form>input[type="text"], header form>input[type="password"] {
+	border-radius: 4px 0px 0px 4px;
+}
+
+header form>input[type="submit"] {
+    margin-left: -10px;
+    border-radius: 0px 4px 4px 0px;
+}
+
+form>input {
+	font-size: 20px;
+	border: 1px #EFECFF solid;
+	background-color: #EFECFF;
+	box-shadow: 0px 0px 2px #444;
+	margin: 2px;
+}
+
+#nav {
+	width: 100%;
+    
+    padding: 2px;
+    
+    display: flex;
+    flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-between;
+    
+	background-color: #0077EE;
+}
+
+
+#nav > div > * {
+    margin-left: 5px;
+}
+
+#nswarning {
+	width: 100vw;
+	
+	margin: 0px;
+	top: 75px;
+	
+	text-align: center;
+	color: #FFF;
+	background-color: #C10000;
+}
+
+#nav a {
+	text-decoration: none;
+	padding: 0px 10px 0px 10px;
+	color: #FFF;
+}
+#nav a:hover {
+	background-color: #0066DD;
+}
+
+#nav>.alignRight {
+	justify-self: flex-end;
+}
+
+#logbox {
+    position: relative;
+    top: 50vh;
+    margin-top: -80px; /* 160/2 */
+    
+	width: 160px;
+    height: 160px;
+    
+	border: 3px #0077EE solid;
+    
+	border-radius: 5px;
+	
+	text-align: center;
+	
+	background-color: #0088FF;
+	color: #FFF;
+    
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#body-class {
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+}
+
+#body-class>#interstial {
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    font-family: 'Roboto', sans-serif;
+	font-weight: 400;
+    
+    color: #FFF;
+    background-color: #0088FF;
+    border: 10px solid #0088FF;
+    border-radius: 5px;
+}
+
+#body-class>#interstial>h1 {
+    margin: 2px;
+}
+
+.leftAlign {
+    display: flex;
+    flex-direction: row;
+	align-items: center;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+}
+
+.rightAlign {
+    right: 0px;
+    
+    display: flex;
+    flex-direction: row;
+	align-items: center;
+	flex-wrap: nowrap;
+	justify-content: flex-end;
+    
+    padding-right: 5px;
+}
+
+#overlay {    
+    z-index: 999;
+    
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+    
+    background-color: rgba(0,0,0,0.8);
+    
+    display: none;
+}
+
+.titleBar {
+    display: block;
+    text-align: left;
+    padding-left: 5px;
+    color: #FFF;
+    background-color: #0077EE;
+}
+
+/* END template.ppcss */
+/* BEGIN frontpage.ppcss */
+
+#mainbody {
+	display: flex;
+	align-items: flex-start;
+	flex-wrap: wrap;
+	justify-content: space-around;
+}
+
+
+#mainbody>a.pic {
+	display: block;
+	margin-top: 5px;
+    
+    height: auto;
+	width: 24%;
+    
+	overflow: hidden;
+}
+
+@media (max-device-width:1000px) {
+    #mainbody>a.pic {
+        width: 49%;
+        height: auto;
+    }
+}
+
+@media (max-device-width:500px) {
+    #mainbody>a.pic {
+        width: 98%;
+        height: auto;
+    }
+}
+
+#mainbody>a.pic>img {	
+	position: relative;
+	vertical-align: middle;
+	width: 100%;
+	height: auto;
+}
+
+/* END frontpage.ppcss */
+/* BEGIN artists.ppcss */
+
+table, table td {
+	border: 1px solid #006DCC;
+}
+table {
+	background-color: #26567F;
+}
+table td {
+	background-color: #3271A8;
+}
