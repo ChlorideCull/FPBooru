@@ -27,8 +27,7 @@
             <a href="about.html">About</a>
         </div>
         <div class="rightAlign">
-            <!--<a class="noButton" href="/user/">Hello, %whoami%!</a>-->
-            <a class="alignRight" onclick="doLogin()">Login</a>
+		%_-USRSTATUS-_%
         </div>
 	</div>
 	<noscript>
