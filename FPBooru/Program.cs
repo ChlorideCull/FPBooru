@@ -21,8 +21,9 @@ namespace FPBooru
             hl.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
             hl.Start();
             Console.WriteLine("Listening on *:80");
+            PageBuilder pb = new PageBuilder();
             while (!Quit) {
-                new Thread(new Router(hl.GetContext()).Process).Start();
+                new Thread(new Router(hl.GetContext(), conn, pb).Process).Start();
             }
         }
     }
@@ -30,31 +31,38 @@ namespace FPBooru
     class Router
     {
         private HttpListenerContext contxt;
-        public Router(HttpListenerContext context)
+        private MySqlConnection conn;
+        private PageBuilder pb;
+
+        public Router(HttpListenerContext context, MySqlConnection connect, PageBuilder pb)
         {
             Console.WriteLine(context.Request.UserHostAddress + " - " + context.Request.HttpMethod + " " + context.Request.RawUrl);
             this.contxt = context;
+            this.conn = connect;
+            this.pb = pb;
         }
 
         public void Process()
         {
-            if (contxt.Request.Url.AbsolutePath == "/")
+            if (contxt.Request.Url.AbsolutePath == "/" && contxt.Request.HttpMethod == "GET")
             {
                 contxt.Response.AddHeader("cache-control", "public, max-age=300");
+                string outputbuf;
+                outputbuf += pb.GetHeader(Auth.ValidateSessionCookie(contxt.Request.Cookies["SeSSION"], conn));
             }
-            else if (contxt.Request.Url.AbsolutePath == "/login")
+            else if (contxt.Request.Url.AbsolutePath == "/login" && contxt.Request.HttpMethod == "POST")
             {
                 contxt.Response.AddHeader("cache-control", "private, max-age=0, no-store, no-cache");
             }
-            else if (contxt.Request.Url.AbsolutePath == "/show")
+            else if (contxt.Request.Url.AbsolutePath == "/show" && contxt.Request.HttpMethod == "GET")
             {
                 contxt.Response.AddHeader("cache-control", "public, max-age=300");
             }
-            else if (contxt.Request.Url.AbsolutePath == "/artists")
+            else if (contxt.Request.Url.AbsolutePath == "/artists" && contxt.Request.HttpMethod == "GET")
             {
                 contxt.Response.AddHeader("cache-control", "public, max-age=3600");
             }
-            else if (contxt.Request.Url.AbsolutePath == "/search")
+            else if (contxt.Request.Url.AbsolutePath == "/search" && contxt.Request.HttpMethod == "GET")
             {
                 contxt.Response.AddHeader("cache-control", "public, max-age=300");
                 contxt.Response.AddHeader("vary", "cookie");
@@ -67,7 +75,7 @@ namespace FPBooru
             {
                 contxt.Response.AddHeader("cache-control", "public, max-age=86400");
             }
-            else if (contxt.Request.Url.AbsolutePath.StartsWith("/static"))
+            else if (contxt.Request.Url.AbsolutePath.StartsWith("/static") && contxt.Request.HttpMethod == "GET")
             {
                 contxt.Response.AddHeader("cache-control", "public, max-age=86400");
             }

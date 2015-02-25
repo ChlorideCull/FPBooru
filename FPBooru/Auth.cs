@@ -5,15 +5,16 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using System.Net;
 
 namespace FPBooru
 {
     static class Auth
     {
-        static string ValidateSessionCookie(byte[] cookie, MySqlConnection conn)
+        public static string ValidateSessionCookie(Cookie cookie, MySqlConnection conn)
         {
             MySqlCommand cmd = new MySqlCommand("SELECT username FROM fpbooru.usrs WHERE session = \"@sess\"", conn);
-            cmd.Parameters["@sess"].Value = cookie;
+            cmd.Parameters["@sess"].Value = cookie.Value;
             MySqlDataReader red = cmd.ExecuteReader();
             foreach (string user in red)
             {
@@ -22,14 +23,14 @@ namespace FPBooru
             return null;
         }
 
-        static byte[] GetSessionCookie(string user, MySqlConnection conn)
+        public static Cookie GetSessionCookie(string user, MySqlConnection conn)
         {
-
+            return new Cookie();
         }
 
-        static byte[] ResetSessionCookie(string user, MySqlConnection conn)
+        public static Cookie ResetSessionCookie(string user, MySqlConnection conn)
         {
-
+            return new Cookie();
         }
     }
 }
