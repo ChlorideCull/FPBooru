@@ -10,8 +10,8 @@ namespace FPBooru
 
         public PageBuilder()
         {
-            rawHeader = File.ReadAllText("template/top.pphtml");
-            rawBottom = File.ReadAllText("template/bottom.pphtml");
+            rawHeader = File.ReadAllText("template/top.html");
+            rawBottom = File.ReadAllText("template/bottom.html");
         }
 
         public string GetHeader(string UserName, int UserID) {
