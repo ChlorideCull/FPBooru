@@ -8,7 +8,7 @@ using MySql.Data.MySqlClient;
 
 namespace FPBooru
 {
-    class Auth
+    static class Auth
     {
         static string ValidateSessionCookie(byte[] cookie, MySqlConnection conn)
         {
