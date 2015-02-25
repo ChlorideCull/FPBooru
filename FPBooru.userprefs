@@ -1,0 +1,14 @@
+﻿<Properties GitUserInfo="UsingGIT" StartupItem="FPBooru/FPBooru.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="FPBooru/Program.cs">
+    <Files>
+      <File FileName="FPBooru/Auth.cs" Line="12" Column="12" />
+      <File FileName="FPBooru/Program.cs" Line="9" Column="9" />
+      <File FileName="FPBooru/app.config" Line="27" Column="27" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
