@@ -32,7 +32,7 @@ namespace FPBooru
         private HttpListenerContext contxt;
         public Router(HttpListenerContext context)
         {
-			Console.WriteLine(context.Request.UserHostAddress + " - " + context.Request.RawUrl);
+            Console.WriteLine(context.Request.UserHostAddress + " - " + context.Request.HttpMethod + " " + context.Request.RawUrl);
             this.contxt = context;
         }
 
