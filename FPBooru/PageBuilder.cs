@@ -17,10 +17,14 @@ namespace FPBooru
         public string GetHeader(string UserName, int UserID) {
             string tmp = rawHeader;
             if (UserName != null)
-                tmp.Replace("%_-USRSTATUS-_%", "<a class=\"noButton\" href=\"/user?id=" + UserID + "\">Hello, " + Username + "!</a>");
+                tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"noButton\" href=\"/user?id=" + UserID + "\">Hello, " + UserName + "!</a>");
             else
-                tmp.Replace("%_-USRSTATUS-_%", "<a class=\"alignRight\" onclick=\"doLogin()\">Login</a>");
+                tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"alignRight\" onclick=\"doLogin()\">Login</a>");
             return tmp;
+        }
+
+        public string GetBottom() {
+            return rawBottom;
         }
     }
 }
