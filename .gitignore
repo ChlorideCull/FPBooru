@@ -16,7 +16,7 @@ x64/
 x86/
 #build/
 build/*.exe
-build/*.exe.config
+build/*.exe.*
 build/*.dll
 #######
 bld/
