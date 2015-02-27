@@ -11,7 +11,6 @@ namespace FPBooru
 {
     static class Program
     {
-        private static MySqlConnection conn;
         private static bool Quit = false;
 
         static void Main(string[] args)
@@ -23,7 +22,7 @@ namespace FPBooru
             Console.WriteLine("Listening on *:80");
             PageBuilder pb = new PageBuilder();
             while (!Quit) {
-                new Thread(new Router(hl.GetContext(), conn, pb).Process).Start();
+                new Thread(new Router(hl.GetContext(), pb).Process).Start();
             }
         }
     }
@@ -34,11 +33,15 @@ namespace FPBooru
         private MySqlConnection conn;
         private PageBuilder pb;
 
-        public Router(HttpListenerContext context, MySqlConnection connect, PageBuilder pb)
+        private static string MYSQL_IP = "localhost";
+        private static string MYSQL_USER = "root";
+        private static string MYSQL_PASS = "hellainsecure";
+
+        public Router(HttpListenerContext context, PageBuilder pb)
         {
             Console.WriteLine(context.Request.UserHostAddress + " - " + context.Request.HttpMethod + " " + context.Request.RawUrl);
             this.contxt = context;
-            this.conn = connect;
+            this.conn = new MySqlConnection("Server=" + MYSQL_IP + ";Database=fpbooru;Uid=" + MYSQL_USER + ";Pwd=" + MYSQL_PASS + ";SslMode=Preferred;ConvertZeroDateTime=True;");
             this.pb = pb;
         }
 
@@ -47,7 +50,7 @@ namespace FPBooru
             if (contxt.Request.Url.AbsolutePath == "/" && contxt.Request.HttpMethod == "GET")
             {
                 contxt.Response.AddHeader("cache-control", "public, max-age=300");
-                string outputbuf;
+                string outputbuf = "";
                 outputbuf += pb.GetHeader(Auth.ValidateSessionCookie(contxt.Request.Cookies["SeSSION"], conn));
             }
             else if (contxt.Request.Url.AbsolutePath == "/login" && contxt.Request.HttpMethod == "POST")
