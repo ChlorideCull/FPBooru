@@ -2,9 +2,11 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="FPBooru/Program.cs">
     <Files>
-      <File FileName="FPBooru/Auth.cs" Line="12" Column="12" />
-      <File FileName="FPBooru/Program.cs" Line="9" Column="9" />
-      <File FileName="FPBooru/app.config" Line="27" Column="27" />
+      <File FileName="FPBooru/Auth.cs" Line="13" Column="13" />
+      <File FileName="FPBooru/Program.cs" Line="47" Column="47" />
+      <File FileName="FPBooru/PageBuilder.cs" Line="17" Column="17" />
+      <File FileName="FPBooru/ImageDBConn.cs" Line="1" Column="1" />
+      <File FileName="FPBooru/Image.cs" Line="6" Column="6" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

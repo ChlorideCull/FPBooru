@@ -11,32 +11,32 @@ using Nancy.Hosting.Self;
 
 namespace FPBooru
 {
-    static class Program
-    {
-        static void Main(string[] args)
-        {
+	static class Program
+	{
+		static void Main(string[] args)
+		{
 			using (var host = new NancyHost(new Uri("http://0.0.0.0:80")))
 			{
 				host.Start();
 				Console.WriteLine("Listening on 0.0.0.0:80");
 				Console.ReadLine();
 			}
-        }
-    }
+		}
+	}
 
-    public class Router : NancyModule
-    {
-        private MySqlConnection conn;
-        private PageBuilder pb;
+	public class Router : NancyModule
+	{
+		private MySqlConnection conn;
+		private PageBuilder pb;
 
-        private static string MYSQL_IP = "localhost";
-        private static string MYSQL_USER = "root";
-        private static string MYSQL_PASS = "hellainsecure";
+		private static string MYSQL_IP = "localhost";
+		private static string MYSQL_USER = "root";
+		private static string MYSQL_PASS = "hellainsecure";
 
-        public Router()
-        {
-            this.conn = new MySqlConnection("Server=" + MYSQL_IP + ";Database=fpbooru;Uid=" + MYSQL_USER + ";Pwd=" + MYSQL_PASS + ";SslMode=Preferred;ConvertZeroDateTime=True;");
-            this.pb = new PageBuilder();
+		public Router()
+		{
+			this.conn = new MySqlConnection("Server=" + MYSQL_IP + ";Database=fpbooru;Uid=" + MYSQL_USER + ";Pwd=" + MYSQL_PASS + ";SslMode=Preferred;ConvertZeroDateTime=True;");
+			this.pb = new PageBuilder();
 
 			Get["/", runAsync: true] = ctx => {
 				string outputbuf = "";
@@ -56,7 +56,7 @@ namespace FPBooru
 					.WithModel(outputbuf);
 			};
 
-            Post["/login", runAsync: true] = ctx => {
+			Post["/login", runAsync: true] = ctx => {
 				string outputbuf = "";
 				return Negotiate
 					.WithContentType("text/html")
@@ -108,6 +108,6 @@ namespace FPBooru
 					.WithHeader("cache-control", "public, max-age=86400")
 					.WithModel(str);
 			};
-        }
-    }
+		}
+	}
 }
