@@ -6,30 +6,26 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using System.Threading;
+using Nancy;
+using Nancy.Hosting.Self;
 
 namespace FPBooru
 {
     static class Program
     {
-        private static bool Quit = false;
-
         static void Main(string[] args)
         {
-            HttpListener hl = new HttpListener();
-            hl.Prefixes.Add("http://*:80/");
-            hl.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
-            hl.Start();
-            Console.WriteLine("Listening on *:80");
-            PageBuilder pb = new PageBuilder();
-            while (!Quit) {
-                new Thread(new Router(hl.GetContext(), pb).Process).Start();
-            }
+			using (var host = new NancyHost(new Uri("http://0.0.0.0:80")))
+			{
+				host.Start();
+				Console.WriteLine("Listening on 0.0.0.0:80");
+				Console.ReadLine();
+			}
         }
     }
 
-    class Router
+    class Router : NancyModule
     {
-        private HttpListenerContext contxt;
         private MySqlConnection conn;
         private PageBuilder pb;
 
@@ -37,56 +33,81 @@ namespace FPBooru
         private static string MYSQL_USER = "root";
         private static string MYSQL_PASS = "hellainsecure";
 
-        public Router(HttpListenerContext context, PageBuilder pb)
+        public Router()
         {
-            Console.WriteLine(context.Request.UserHostAddress + " - " + context.Request.HttpMethod + " " + context.Request.RawUrl);
-            this.contxt = context;
             this.conn = new MySqlConnection("Server=" + MYSQL_IP + ";Database=fpbooru;Uid=" + MYSQL_USER + ";Pwd=" + MYSQL_PASS + ";SslMode=Preferred;ConvertZeroDateTime=True;");
-            this.pb = pb;
-        }
+            this.pb = new PageBuilder();
 
-        public void Process()
-        {
-            if (contxt.Request.Url.AbsolutePath == "/" && contxt.Request.HttpMethod == "GET")
-            {
-                contxt.Response.AddHeader("cache-control", "public, max-age=300");
-                string outputbuf = "";
-                outputbuf += pb.GetHeader(Auth.ValidateSessionCookie(contxt.Request.Cookies["SeSSION"], conn));
-            }
-            else if (contxt.Request.Url.AbsolutePath == "/login" && contxt.Request.HttpMethod == "POST")
-            {
-                contxt.Response.AddHeader("cache-control", "private, max-age=0, no-store, no-cache");
-            }
-            else if (contxt.Request.Url.AbsolutePath == "/show" && contxt.Request.HttpMethod == "GET")
-            {
-                contxt.Response.AddHeader("cache-control", "public, max-age=300");
-            }
-            else if (contxt.Request.Url.AbsolutePath == "/artists" && contxt.Request.HttpMethod == "GET")
-            {
-                contxt.Response.AddHeader("cache-control", "public, max-age=3600");
-            }
-            else if (contxt.Request.Url.AbsolutePath == "/search" && contxt.Request.HttpMethod == "GET")
-            {
-                contxt.Response.AddHeader("cache-control", "public, max-age=300");
-                contxt.Response.AddHeader("vary", "cookie");
-            }
-            else if (contxt.Request.Url.AbsolutePath == "/upload" && contxt.Request.HttpMethod == "POST")
-            {
-                contxt.Response.AddHeader("cache-control", "private, max-age=0, no-store, no-cache");
-            }
-            else if (contxt.Request.Url.AbsolutePath == "/upload" && contxt.Request.HttpMethod == "GET")
-            {
-                contxt.Response.AddHeader("cache-control", "public, max-age=86400");
-            }
-            else if (contxt.Request.Url.AbsolutePath.StartsWith("/static") && contxt.Request.HttpMethod == "GET")
-            {
-                contxt.Response.AddHeader("cache-control", "public, max-age=86400");
-            }
-            else
-            {
-                contxt.Response.AddHeader("cache-control", "private, max-age=0, no-store, no-cache");
-                contxt.Response.StatusCode = 404;
-            }
+			Get["/", runAsync: true] = ctx => {
+				string outputbuf = "";
+				int page = 0;
+				outputbuf += pb.GetHeader(Auth.ValidateSessionCookie(ctx.Request.Headers["SeSSION"], conn));
+				outputbuf += "<div id=\"interstial\">";
+				outputbuf += "<h1>The Front Page.</h1>";
+				outputbuf += "The cream of the crop, the best of the best. Community submitted images, voted on by the community.";
+				outputbuf += "</div>";
+				outputbuf += "Page " + page+1;
+				outputbuf += "<div id=\"mainbody\">";
+				outputbuf += pb.GetImageGrid(ImageDBConn.GetImages(conn, page));
+				outputbuf += "</div>";
+				return Negotiate
+					.WithContentType("text/html")
+					.WithHeader("cache-control", "public, max-age=300")
+					.WithModel(outputbuf);
+			};
+
+            Post["/login", runAsync: true] = ctx => {
+				string outputbuf = "";
+				return Negotiate
+					.WithContentType("text/html")
+					.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
+					.WithModel(outputbuf);
+			};
+
+			Get["/show/{id:int}", runAsync: true] = ctx => {
+				string outputbuf = "";
+				return Negotiate
+					.WithContentType("text/html")
+					.WithHeader("cache-control", "public, max-age=300")
+					.WithModel(outputbuf);
+			};
+			Get["/artists", runAsync: true] = ctx => {
+				string outputbuf = "";
+				return Negotiate
+					.WithContentType("text/html")
+					.WithHeader("cache-control", "public, max-age=3600")
+					.WithModel(outputbuf);
+			};
+			Get["/search", runAsync: true] = ctx => {
+				string outputbuf = "";
+				return Negotiate
+					.WithContentType("text/html")
+					.WithHeader("cache-control", "public, max-age=300")
+					.WithHeader("vary", "cookie")
+					.WithModel(outputbuf);
+			};
+			Post["/upload", runAsync: true] = ctx => {
+				string outputbuf = "";
+				return Negotiate
+					.WithContentType("text/html")
+					.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
+					.WithModel(outputbuf);
+			};
+
+			Get["/upload", runAsync: true] = ctx => {
+				string outputbuf = "";
+				return Negotiate
+					.WithContentType("text/html")
+					.WithHeader("cache-control", "public, max-age=86400")
+					.WithModel(outputbuf);
+			};
+
+			Get["/static", runAsync: true] = ctx => {
+				System.IO.Stream str;
+				return Negotiate
+					.WithHeader("cache-control", "public, max-age=86400")
+					.WithModel(str);
+			};
         }
     }
 }
