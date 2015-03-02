@@ -24,7 +24,7 @@ namespace FPBooru
         }
     }
 
-    class Router : NancyModule
+    public class Router : NancyModule
     {
         private MySqlConnection conn;
         private PageBuilder pb;
