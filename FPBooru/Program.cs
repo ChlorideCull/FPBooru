@@ -15,11 +15,11 @@ namespace FPBooru
 	{
 		static void Main(string[] args)
 		{
-			using (var host = new NancyHost(new Uri("http://0.0.0.0:80")))
+			using (var host = new NancyHost(new Uri("http://localhost:80")))
 			{
 				host.Start();
-				Console.WriteLine("Listening on 0.0.0.0:80");
-				Console.ReadLine();
+				Console.WriteLine("Listening on localhost:80");
+				Thread.Sleep(Timeout.Infinite);
 			}
 		}
 	}
@@ -38,7 +38,7 @@ namespace FPBooru
 			this.conn = new MySqlConnection("Server=" + MYSQL_IP + ";Database=fpbooru;Uid=" + MYSQL_USER + ";Pwd=" + MYSQL_PASS + ";SslMode=Preferred;ConvertZeroDateTime=True;");
 			this.pb = new PageBuilder();
 
-			Get["/", runAsync: true] = ctx => {
+			Get["/"] = ctx => {
 				string outputbuf = "";
 				int page = 0;
 				outputbuf += pb.GetHeader(Auth.ValidateSessionCookie(ctx.Request.Headers["SeSSION"], conn));
@@ -56,7 +56,7 @@ namespace FPBooru
 					.WithModel(outputbuf);
 			};
 
-			Post["/login", runAsync: true] = ctx => {
+			Post["/login"] = ctx => {
 				string outputbuf = "";
 				return Negotiate
 					.WithContentType("text/html")
@@ -64,21 +64,23 @@ namespace FPBooru
 					.WithModel(outputbuf);
 			};
 
-			Get["/show/{id:int}", runAsync: true] = ctx => {
+			Get["/show/{id:int}"] = ctx => {
 				string outputbuf = "";
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=300")
 					.WithModel(outputbuf);
 			};
-			Get["/artists", runAsync: true] = ctx => {
+
+			Get["/artists"] = ctx => {
 				string outputbuf = "";
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=3600")
 					.WithModel(outputbuf);
 			};
-			Get["/search", runAsync: true] = ctx => {
+
+			Get["/search"] = ctx => {
 				string outputbuf = "";
 				return Negotiate
 					.WithContentType("text/html")
@@ -86,7 +88,8 @@ namespace FPBooru
 					.WithHeader("vary", "cookie")
 					.WithModel(outputbuf);
 			};
-			Post["/upload", runAsync: true] = ctx => {
+
+			Post["/upload"] = ctx => {
 				string outputbuf = "";
 				return Negotiate
 					.WithContentType("text/html")
@@ -94,7 +97,7 @@ namespace FPBooru
 					.WithModel(outputbuf);
 			};
 
-			Get["/upload", runAsync: true] = ctx => {
+			Get["/upload"] = ctx => {
 				string outputbuf = "";
 				return Negotiate
 					.WithContentType("text/html")
@@ -102,8 +105,9 @@ namespace FPBooru
 					.WithModel(outputbuf);
 			};
 
-			Get["/static", runAsync: true] = ctx => {
+			Get["/static/{filename*}"] = ctx => {
 				System.IO.Stream str;
+				str = System.IO.File.Open(ctx.filename);
 				return Negotiate
 					.WithHeader("cache-control", "public, max-age=86400")
 					.WithModel(str);
