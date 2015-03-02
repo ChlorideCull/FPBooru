@@ -26,6 +26,13 @@ namespace FPBooru
         public string GetBottom() {
             return rawBottom;
         }
+
+        public string GetImageGrid(Image[] images) {
+			string output = "";
+            foreach (Image img in images) {
+				output += "<a href=\"show?id=" + img.id + "\" class=\"pic\"><img src=\"static/thumbs/" + img.imagepaths[0] + ".png\" /></a>";
+            }
+        }
     }
 }
 
