@@ -106,11 +106,10 @@ namespace FPBooru
 			};
 
 			Get["/static/{filename*}"] = ctx => {
-				System.IO.Stream str;
-				str = System.IO.File.Open(ctx.filename);
 				return Negotiate
-					.WithHeader("cache-control", "public, max-age=86400")
-					.WithModel(str);
+					.WithStatusCode(502)
+					.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
+					.WithModel("Internal server error: This subdirectory should be served by nginx");
 			};
 		}
 	}
