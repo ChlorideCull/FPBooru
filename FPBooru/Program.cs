@@ -72,6 +72,14 @@ namespace FPBooru
 					.WithModel(outputbuf);
 			};
 
+			Get["/user/{id:string}"] = ctx => {
+				string outputbuf = "";
+				return Negotiate
+					.WithContentType("text/html")
+					.WithHeader("cache-control", "public, max-age=3600")
+					.WithModel(outputbuf);
+			};
+
 			Get["/artists"] = ctx => {
 				string outputbuf = "";
 				return Negotiate

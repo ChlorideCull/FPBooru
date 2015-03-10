@@ -17,7 +17,7 @@ namespace FPBooru
 		public string GetHeader(string UserName) {
 			string tmp = rawHeader;
 			if (UserName != null)
-				tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"noButton\" href=\"/user?id=" + UserName + "\">Hello, " + UserName + "!</a>");
+				tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"noButton\" href=\"/user/" + UserName + "\">Hello, " + UserName + "!</a>");
 			else
 				tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"alignRight\" onclick=\"doLogin()\">Login</a>");
 			return tmp;
