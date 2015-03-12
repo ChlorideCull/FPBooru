@@ -113,12 +113,7 @@ namespace FPBooru
 					.WithModel(outputbuf);
 			};
 
-			Get["/static/{filename*}"] = ctx => {
-				return Negotiate
-					.WithStatusCode(502)
-					.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
-					.WithModel("Internal server error: This subdirectory should be served by nginx");
-			};
+			Get["/static/{filename*}"] = ctx => Negotiate.WithStatusCode(502).WithHeader("cache-control", "private, max-age=0, no-store, no-cache").WithModel("Internal server error: This subdirectory should be served by nginx");
 		}
 	}
 }
