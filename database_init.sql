@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `fpbooru`.`usrs` (
   `session` varchar(255) NOT NULL,
   PRIMARY KEY (`username`),
   UNIQUE INDEX `username_UNIQUE` (`username` ASC),
-  UNIQUE INDEX `session_UNIQUE` (`session` ASC)
+  UNIQUE INDEX `session_UNIQUE` (`session` ASC),
   INDEX `sessuser` (`username` ASC, `session` ASC))
 ENGINE=InnoDB;
 
