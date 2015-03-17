@@ -64,11 +64,19 @@ namespace FPBooru
 					.WithModel(outputbuf);
 			};
 
-			Get["/show/{id:int}"] = ctx => {
+			Get["/image/{id:int}"] = ctx => {
 				string outputbuf = "";
 				return Negotiate
 					.WithContentType("text/html")
-					.WithHeader("cache-control", "public, max-age=300")
+					.WithHeader("cache-control", "public, max-age=3600")
+					.WithModel(outputbuf);
+			};
+
+			Get["/tag/{id:int}"] = ctx => {
+				string outputbuf = "";
+				return Negotiate
+					.WithContentType("text/html")
+					.WithHeader("cache-control", "public, max-age=3600")
 					.WithModel(outputbuf);
 			};
 
