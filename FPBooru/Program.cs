@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using System.Security.Cryptography;
 using System.Threading;
 using Nancy;
 using Nancy.Hosting.Self;
@@ -57,11 +58,19 @@ namespace FPBooru
 			};
 
 			Post["/login"] = ctx => {
-				string outputbuf = "";
-				return Negotiate
-					.WithContentType("text/html")
-					.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
-					.WithModel(outputbuf);
+				string cookie = Auth.AuthenticateUser(ctx.Request.Form["user"], (new SHA256Managed()).ComputeHash(System.Text.Encoding.UTF8.GetBytes(ctx.Request.Form["pass"])));
+				if (cookie != null) {
+					return Negotiate
+						.WithStatusCode(Nancy.HttpStatusCode.TemporaryRedirect)
+						.WithHeader("Set-Cookie", cookie)
+						.WithHeader("Location", "/")
+						.WithHeader("cache-control", "private, max-age=0, no-store, no-cache");
+				} else {
+					return Negotiate
+						.WithStatusCode(Nancy.HttpStatusCode.Forbidden)
+						.WithReasonPhrase("Login failed")
+						.WithHeader("cache-control", "private, max-age=0, no-store, no-cache");
+				}
 			};
 
 			Get["/image/{id:int}"] = ctx => {

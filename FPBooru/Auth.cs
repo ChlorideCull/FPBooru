@@ -23,14 +23,20 @@ namespace FPBooru
 			return null;
 		}
 
-		public static Cookie GetSessionCookie(string user, MySqlConnection conn)
+		public static string AuthenticateUser(string user, byte[] sha256password)
 		{
-			return new Cookie();
+			throw NotImplementedException();
+			return GetSessionCookie(user);
 		}
 
-		public static Cookie ResetSessionCookie(string user, MySqlConnection conn)
+		public static string GetSessionCookie(string user, MySqlConnection conn)
 		{
-			return new Cookie();
+			return "";
+		}
+
+		public static string ResetSessionCookie(string user, MySqlConnection conn)
+		{
+			return "";
 		}
 	}
 }
