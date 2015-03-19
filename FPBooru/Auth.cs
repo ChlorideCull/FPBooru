@@ -27,12 +27,21 @@ namespace FPBooru
 
 		public static string AuthenticateUser(string user, byte[] sha256password, MySqlConnection conn)
 		{
-			string cookie = GetSessionCookie(user, conn);
-			if (cookie != null) {
-				return cookie;
-			} else {
-				return ResetSessionCookie(user, conn);
+			MySqlCommand cmd = new MySqlCommand("SELECT password FROM fpbooru.usrs WHERE username = \"@uname\"", conn);
+			cmd.Parameters["@uname"].Value = user;
+			MySqlDataReader red = cmd.ExecuteReader();
+			foreach (string pw in red)
+			{
+				if (Convert.FromBase64String(pw) == sha256password) {
+					string cookie = GetSessionCookie(user, conn);
+					if (cookie != null) {
+						return cookie;
+					} else {
+						return ResetSessionCookie(user, conn);
+					}
+				}
 			}
+			return null;
 		}
 
 		public static string GetSessionCookie(string user, MySqlConnection conn)
