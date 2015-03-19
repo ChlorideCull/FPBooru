@@ -11,10 +11,10 @@ namespace FPBooru
 {
 	static class Auth
 	{
-		public static string ValidateSessionCookie(Cookie cookie, MySqlConnection conn)
+		public static string ValidateSessionCookie(string cookie, MySqlConnection conn)
 		{
 			MySqlCommand cmd = new MySqlCommand("SELECT username FROM fpbooru.usrs WHERE session = \"@sess\"", conn);
-			cmd.Parameters["@sess"].Value = cookie.Value;
+			cmd.Parameters["@sess"].Value = cookie;
 			MySqlDataReader red = cmd.ExecuteReader();
 			foreach (string user in red)
 			{
