@@ -51,6 +51,7 @@ namespace FPBooru
 				outputbuf += "<div id=\"mainbody\">";
 				outputbuf += pb.GetImageGrid(ImageDBConn.GetImages(conn, page));
 				outputbuf += "</div>";
+				outputbuf += pb.GetBottom();
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=300")
@@ -66,6 +67,7 @@ namespace FPBooru
 				outputbuf += "Password: <input type=\"password\" name=\"pass\" />";
 				outputbuf += "<input type=\"submit\" value=\"Login\" />";
 				outputbuf += "</form>";
+				outputbuf += pb.GetBottom();
 
 				return Negotiate
 					.WithContentType("text/html")
@@ -140,6 +142,15 @@ namespace FPBooru
 
 			Get["/upload"] = ctx => {
 				string outputbuf = "";
+				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(ctx.Request.Headers["SeSSION"], conn));
+				outputbuf += "<form action=\"upload\" method=\"post\" enctype=\"multipart/form-data\">";
+				outputbuf += "Currently supported files are: GIF, JPG, PNG, SVG, WebP and WebM.";
+				outputbuf += "<label for=\"img\">File:</label>";
+				outputbuf += "<input type=\"file\" name=\"img\" accept=\"image/gif,image/jpeg,image/png,image/svg+xml,image/webp,video/webm\" />";
+				outputbuf += "<label for=\"tags\">Tags:</label>";
+				outputbuf += "<input type=\"text\" name=\"tags\" />";
+				outputbuf += "<input type=\"submit\" value=\"Upload\" />";
+				outputbuf += "</form>";
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=86400")
