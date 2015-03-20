@@ -42,7 +42,7 @@ namespace FPBooru
 			Get["/"] = ctx => {
 				string outputbuf = "";
 				int page = 0;
-				outputbuf += pb.GetHeader(Auth.ValidateSessionCookie(ctx.Request.Headers["SeSSION"], conn));
+				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(ctx.Request.Headers["SeSSION"], conn));
 				outputbuf += "<div id=\"interstial\">";
 				outputbuf += "<h1>The Front Page.</h1>";
 				outputbuf += "The cream of the crop, the best of the best. Community submitted images, voted on by the community.";
@@ -51,6 +51,22 @@ namespace FPBooru
 				outputbuf += "<div id=\"mainbody\">";
 				outputbuf += pb.GetImageGrid(ImageDBConn.GetImages(conn, page));
 				outputbuf += "</div>";
+				return Negotiate
+					.WithContentType("text/html")
+					.WithHeader("cache-control", "public, max-age=300")
+					.WithModel(outputbuf);
+			};
+
+			Get["/login"] = ctx => {
+				string outputbuf = "";
+
+				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(ctx.Request.Headers["SeSSION"], conn));
+				outputbuf += "<form action=\"login\" method=\"post\">";
+				outputbuf += "Username: <input type=\"text\" name=\"user\" />";
+				outputbuf += "Password: <input type=\"password\" name=\"pass\" />";
+				outputbuf += "<input type=\"submit\" value=\"Login\" />";
+				outputbuf += "</form>";
+
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=300")
@@ -67,8 +83,8 @@ namespace FPBooru
 						.WithHeader("cache-control", "private, max-age=0, no-store, no-cache");
 				} else {
 					return Negotiate
-						.WithStatusCode(Nancy.HttpStatusCode.Forbidden)
-						.WithReasonPhrase("Login failed")
+						.WithStatusCode(Nancy.HttpStatusCode.TemporaryRedirect)
+						.WithHeader("Location", "/login")
 						.WithHeader("cache-control", "private, max-age=0, no-store, no-cache");
 				}
 			};
