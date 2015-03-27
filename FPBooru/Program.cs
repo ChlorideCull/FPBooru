@@ -101,6 +101,11 @@ namespace FPBooru
 
 			Get["/tag/{id:int}"] = ctx => {
 				string outputbuf = "";
+				int page = 0;
+				outputbuf += "Page " + page+1;
+				outputbuf += "<div id=\"mainbody\">";
+				outputbuf += pb.GetImageGrid(ImageDBConn.GetImages(conn, page, new string[] {Convert.ToString(this.Context.Parameters["id"])}));
+				outputbuf += "</div>";
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=3600")
