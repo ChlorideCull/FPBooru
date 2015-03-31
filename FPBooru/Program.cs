@@ -29,6 +29,7 @@ namespace FPBooru
 	{
 		private MySqlConnection conn;
 		private PageBuilder pb;
+		private ImageDBConn imgconn;
 
 		private static string MYSQL_IP = "localhost";
 		private static string MYSQL_USER = "root";
@@ -38,8 +39,10 @@ namespace FPBooru
 		{
 			this.conn = new MySqlConnection("Server=" + MYSQL_IP + ";Database=fpbooru;Uid=" + MYSQL_USER + ";Pwd=" + MYSQL_PASS + ";SslMode=Preferred;ConvertZeroDateTime=True;");
 			this.pb = new PageBuilder();
+			this.imgconn = new ImageDBConn(conn);
 
 			Get["/"] = ctx => {
+
 				string outputbuf = "";
 				int page = 0;
 				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(ctx.Request.Headers["SeSSION"], conn));
@@ -49,7 +52,7 @@ namespace FPBooru
 				outputbuf += "</div>";
 				outputbuf += "Page " + page+1;
 				outputbuf += "<div id=\"mainbody\">";
-				outputbuf += pb.GetImageGrid(ImageDBConn.GetImages(conn, page));
+				outputbuf += pb.GetImageGrid(imgconn.GetImages(0));
 				outputbuf += "</div>";
 				outputbuf += pb.GetBottom();
 				return Negotiate
@@ -76,7 +79,7 @@ namespace FPBooru
 			};
 
 			Post["/login"] = ctx => {
-				string cookie = Auth.AuthenticateUser(ctx.Request.Form["user"], (new SHA256Managed()).ComputeHash(System.Text.Encoding.UTF8.GetBytes(ctx.Request.Form["pass"])));
+				string cookie = Auth.AuthenticateUser(ctx.Request.Form["user"], (new SHA256Managed()).ComputeHash(System.Text.Encoding.UTF8.GetBytes(ctx.Request.Form["pass"])), conn);
 				if (cookie != null) {
 					return Negotiate
 						.WithStatusCode(Nancy.HttpStatusCode.TemporaryRedirect)
@@ -104,7 +107,7 @@ namespace FPBooru
 				int page = 0;
 				outputbuf += "Page " + page+1;
 				outputbuf += "<div id=\"mainbody\">";
-				outputbuf += pb.GetImageGrid(ImageDBConn.GetImages(conn, page, new string[] {Convert.ToString(this.Context.Parameters["id"])}));
+				outputbuf += pb.GetImageGrid(imgconn.GetImages(page, new string[] {Convert.ToString(this.Context.Parameters["id"])}));
 				outputbuf += "</div>";
 				return Negotiate
 					.WithContentType("text/html")
