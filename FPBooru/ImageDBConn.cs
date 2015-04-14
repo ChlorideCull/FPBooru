@@ -8,12 +8,32 @@ namespace FPBooru
 	{
 		MySqlCommand getImageCmd;
 		MySqlCommand getImageByTagsCmd;
+		MySqlCommand addImageCmd;
 
 		public ImageDBConn(MySqlConnection conn) {
+			addImageCmd = new MySqlCommand("INSERT INTO fpbooru.images (id, imagepath_csv, tagids_csv, time_created, time_updated) VALUES (@id, '@images', '@tagids', NOW(), NOW());", conn);
 			getImageCmd = new MySqlCommand("SELECT id, imagepath_csv, tagids_csv FROM fpbooru.images ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
 			getImageByTagsCmd = new MySqlCommand("SELECT id, imagepath_csv, tagids_csv FROM fpbooru.images WHERE tagids_csv REGEXP '@regex' ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
+
+			addImageCmd.Prepare();
 			getImageCmd.Prepare();
 			getImageByTagsCmd.Prepare();
+		}
+
+		public void AddImage(Image img) {
+			addImageCmd.Parameters.Clear();
+
+			string imagepathcsv = "";
+			foreach (string str in img.imagepaths) {
+				imagepathcsv += str + ",";
+			}
+			addImageCmd.Parameters.AddWithValue("@images", imagepathcsv);
+
+			string tagscsv = "";
+			foreach (int str in img.tagids) {
+				tagscsv += str + ",";
+			}
+			addImageCmd.Parameters.AddWithValue("@tagids", tagscsv);
 		}
 
 		public Image[] GetImages(int page) {
@@ -24,10 +44,10 @@ namespace FPBooru
 			return IterateImageReader(red);
 		}
 
-		public Image[] GetImages(int page, string[] tags) {
+		public Image[] GetImages(int page, int[] tags) {
 			//REGEX Basic: The CSV field always end with a comma. Regex would be tag1,|tag2,|tag3, etc.
 			string regex = "";
-			foreach (string tag in tags)
+			foreach (int tag in tags)
 			{
 				regex += tag + ",|";
 			}

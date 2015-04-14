@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using Nancy;
 using Nancy.Hosting.Self;
+using System.Diagnostics;
 
 namespace FPBooru
 {
@@ -142,6 +143,35 @@ namespace FPBooru
 
 			Post["/upload"] = ctx => {
 				string outputbuf = "";
+				HttpFile file = this.Context.Request.Files.FirstOrDefault();
+				string name = ((long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds) + "_" + file.Name;
+				System.IO.FileStream mainfile = System.IO.File.Create(System.IO.Path.GetFullPath("static/images/" + name));
+
+				file.Value.CopyTo(mainfile);
+
+				ProcessStartInfo psi;
+				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
+					psi = new ProcessStartInfo("mogrify.exe");
+					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^^ -gravity center -extent 648x324 " + System.IO.Path.GetFullPath("static/images/" + name);
+				} else {
+					psi = new ProcessStartInfo("mogrify");
+					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^ -gravity center -extent 648x324 " + System.IO.Path.GetFullPath("static/images/" + name);
+				}
+				while (!Process.Start(psi).HasExited) {
+					Thread.Sleep(5);
+				}
+
+				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
+					psi = new ProcessStartInfo("mogrify.exe");
+					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^^ -gravity center -extent 1920x100 " + System.IO.Path.GetFullPath("static/images/" + name);
+				} else {
+					psi = new ProcessStartInfo("mogrify");
+					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^ -gravity center -extent 1920x100 " + System.IO.Path.GetFullPath("static/images/" + name);
+				}
+				while (!Process.Start(psi).HasExited) {
+					Thread.Sleep(5);
+				}
+
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
