@@ -4,9 +4,9 @@ namespace FPBooru
 {
 	public struct Image
 	{
-		public int id;
+		public long id;
 		public string[] imagepaths;
-		public int[] tagids;
+		public long[] tagids;
 		public DateTime created;
 		public DateTime edited;
 	}

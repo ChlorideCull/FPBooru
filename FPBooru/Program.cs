@@ -17,10 +17,12 @@ namespace FPBooru
 	{
 		static void Main(string[] args)
 		{
-			using (var host = new NancyHost(new Uri("http://localhost:80")))
+			HostConfiguration hc = new HostConfiguration();
+			hc.UrlReservations.CreateAutomatically = true;
+			using (var host = new NancyHost(hc, new Uri("http://localhost:8097")))
 			{
 				host.Start();
-				Console.WriteLine("Listening on localhost:80");
+				Console.WriteLine("Listening on localhost:8097");
 				Thread.Sleep(Timeout.Infinite);
 			}
 		}
@@ -39,14 +41,14 @@ namespace FPBooru
 		public Router()
 		{
 			this.conn = new MySqlConnection("Server=" + MYSQL_IP + ";Database=fpbooru;Uid=" + MYSQL_USER + ";Pwd=" + MYSQL_PASS + ";SslMode=Preferred;ConvertZeroDateTime=True;");
+			conn.Open();
 			this.pb = new PageBuilder();
 			this.imgconn = new ImageDBConn(conn);
 
 			Get["/"] = ctx => {
-
 				string outputbuf = "";
 				int page = 0;
-				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(ctx.Request.Headers["SeSSION"], conn));
+				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].ToString(), conn));
 				outputbuf += "<div id=\"interstial\">";
 				outputbuf += "<h1>The Front Page.</h1>";
 				outputbuf += "The cream of the crop, the best of the best. Community submitted images, voted on by the community.";
@@ -65,7 +67,7 @@ namespace FPBooru
 			Get["/login"] = ctx => {
 				string outputbuf = "";
 
-				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(ctx.Request.Headers["SeSSION"], conn));
+				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].ToString(), conn));
 				outputbuf += "<form action=\"login\" method=\"post\">";
 				outputbuf += "Username: <input type=\"text\" name=\"user\" />";
 				outputbuf += "Password: <input type=\"password\" name=\"pass\" />";
@@ -108,7 +110,7 @@ namespace FPBooru
 				int page = 0;
 				outputbuf += "Page " + page+1;
 				outputbuf += "<div id=\"mainbody\">";
-				outputbuf += pb.GetImageGrid(imgconn.GetImages(page, new string[] {Convert.ToString(this.Context.Parameters["id"])}));
+				outputbuf += pb.GetImageGrid(imgconn.GetImages(page, this.Context.Parameters["id"]));
 				outputbuf += "</div>";
 				return Negotiate
 					.WithContentType("text/html")
@@ -143,6 +145,8 @@ namespace FPBooru
 
 			Post["/upload"] = ctx => {
 				string outputbuf = "";
+
+				//Process the file
 				HttpFile file = this.Context.Request.Files.FirstOrDefault();
 				string name = ((long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds) + "_" + file.Name;
 				System.IO.FileStream mainfile = System.IO.File.Create(System.IO.Path.GetFullPath("static/images/" + name));
@@ -171,6 +175,8 @@ namespace FPBooru
 				while (!Process.Start(psi).HasExited) {
 					Thread.Sleep(5);
 				}
+
+				//Add to the database, resolve tags, create them if not found.
 
 				return Negotiate
 					.WithContentType("text/html")
