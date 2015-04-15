@@ -18,6 +18,8 @@ x86/
 build/
 !build/static
 !build/template
+!build/Router
+!build/Router/dummy.rawhtml
 build/*.exe.*
 build/*.dll
 #######

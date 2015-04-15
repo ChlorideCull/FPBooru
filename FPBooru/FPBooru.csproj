@@ -57,6 +57,7 @@
     <Compile Include="PageBuilder.cs" />
     <Compile Include="ImageDBConn.cs" />
     <Compile Include="Image.cs" />
+    <Compile Include="RawViewer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

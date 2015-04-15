@@ -9,6 +9,8 @@ using System.Security.Cryptography;
 using System.Threading;
 using Nancy;
 using Nancy.Hosting.Self;
+using Nancy.ViewEngines;
+using Nancy.Conventions;
 using System.Diagnostics;
 
 namespace FPBooru
@@ -25,6 +27,22 @@ namespace FPBooru
 				Console.WriteLine("Listening on localhost:8097");
 				Thread.Sleep(Timeout.Infinite);
 			}
+		}
+	}
+
+	public class CustomBootstrap : DefaultNancyBootstrapper {
+		protected override IEnumerable<Type> ViewEngines {
+			get {
+				return new Type[] { typeof(RawViewEngine) };
+			}
+		}
+
+		protected override void ConfigureConventions(Nancy.Conventions.NancyConventions nancyConventions) {
+			base.ConfigureConventions(nancyConventions);
+			nancyConventions.StaticContentsConventions.Clear();
+			nancyConventions.StaticContentsConventions.Add(
+				StaticContentConventionBuilder.AddDirectory("static", @"static/")
+			);
 		}
 	}
 
@@ -45,6 +63,7 @@ namespace FPBooru
 			this.pb = new PageBuilder();
 			this.imgconn = new ImageDBConn(conn);
 
+
 			Get["/"] = ctx => {
 				string outputbuf = "";
 				int page = 0;
@@ -61,6 +80,7 @@ namespace FPBooru
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=300")
+					.WithView("dummy.rawhtml")
 					.WithModel(outputbuf);
 			};
 
@@ -78,6 +98,7 @@ namespace FPBooru
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=300")
+					.WithView("dummy.rawhtml")
 					.WithModel(outputbuf);
 			};
 
@@ -102,6 +123,7 @@ namespace FPBooru
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=3600")
+					.WithView("dummy.rawhtml")
 					.WithModel(outputbuf);
 			};
 
@@ -115,6 +137,7 @@ namespace FPBooru
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=3600")
+					.WithView("dummy.rawhtml")
 					.WithModel(outputbuf);
 			};
 
@@ -123,6 +146,7 @@ namespace FPBooru
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=3600")
+					.WithView("dummy.rawhtml")
 					.WithModel(outputbuf);
 			};
 
@@ -131,6 +155,7 @@ namespace FPBooru
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=3600")
+					.WithView("dummy.rawhtml")
 					.WithModel(outputbuf);
 			};
 
@@ -140,6 +165,7 @@ namespace FPBooru
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=300")
 					.WithHeader("vary", "cookie")
+					.WithView("dummy.rawhtml")
 					.WithModel(outputbuf);
 			};
 
@@ -181,6 +207,7 @@ namespace FPBooru
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
+					.WithView("dummy.rawhtml")
 					.WithModel(outputbuf);
 			};
 
@@ -198,10 +225,9 @@ namespace FPBooru
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=86400")
+					.WithView("dummy.rawhtml")
 					.WithModel(outputbuf);
 			};
-
-			Get["/static/{filename*}"] = ctx => Negotiate.WithStatusCode(502).WithHeader("cache-control", "private, max-age=0, no-store, no-cache").WithModel("Internal server error: This subdirectory should be served by nginx");
 		}
 	}
 }
