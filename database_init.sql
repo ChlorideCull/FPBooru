@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS `fpbooru`.`images` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `tagids_csv` VARCHAR(255) NOT NULL,
   `imagepath_csv` VARCHAR(255) NOT NULL,
-  `time_created` DATETIME(1) NOT NULL,
-  `time_updated` DATETIME(1) NOT NULL,
+  `time_created` DATETIME NOT NULL,
+  `time_updated` DATETIME NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   INDEX `openimage` (`id` ASC, `tagids_csv` ASC, `imagepath_csv` ASC))
