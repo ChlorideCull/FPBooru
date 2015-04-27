@@ -222,6 +222,21 @@ form>input {
     background-color: #0077EE;
 }
 
+span#pageind  {
+	font-family: 'Roboto', sans-serif;
+	font-size: large;
+	font-weight: 400;
+    color: #FFF;
+	
+	text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+	
+	text-align: center;
+}
+
 /* END template.ppcss */
 /* BEGIN frontpage.ppcss */
 

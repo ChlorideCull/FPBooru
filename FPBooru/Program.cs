@@ -72,7 +72,7 @@ namespace FPBooru
 				outputbuf += "<h1>The Front Page.</h1>";
 				outputbuf += "The cream of the crop, the best of the best. Community submitted images, voted on by the community.";
 				outputbuf += "</div>";
-				outputbuf += "Page " + page+1;
+				outputbuf += "<span id=\"pageind\">Page " + page+1 + "</span>";
 				outputbuf += "<div id=\"mainbody\">";
 				outputbuf += pb.GetImageGrid(imgconn.GetImages(0));
 				outputbuf += "</div>";
@@ -130,7 +130,7 @@ namespace FPBooru
 			Get["/tag/{id:int}"] = ctx => {
 				string outputbuf = "";
 				int page = 0;
-				outputbuf += "Page " + page+1;
+				outputbuf += "<span id=\"pageind\">Page " + page+1 + "</span>";
 				outputbuf += "<div id=\"mainbody\">";
 				outputbuf += pb.GetImageGrid(imgconn.GetImages(page, this.Context.Parameters["id"]));
 				outputbuf += "</div>";
@@ -180,6 +180,8 @@ namespace FPBooru
 				file.Value.CopyTo(mainfile);
 
 				ProcessStartInfo psi;
+				Process ps;
+
 				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
 					psi = new ProcessStartInfo("mogrify.exe");
 					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^^ -gravity center -extent 648x324 " + System.IO.Path.GetFullPath("static/images/" + name);
@@ -187,7 +189,11 @@ namespace FPBooru
 					psi = new ProcessStartInfo("mogrify");
 					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^ -gravity center -extent 648x324 " + System.IO.Path.GetFullPath("static/images/" + name);
 				}
-				while (!Process.Start(psi).HasExited) {
+				psi.RedirectStandardError = true;
+				psi.UseShellExecute = false;
+				ps = Process.Start(psi);
+				while (!ps.HasExited) {
+					ps.StandardError.BaseStream.CopyTo(Console.OpenStandardError());
 					Thread.Sleep(5);
 				}
 
@@ -198,7 +204,11 @@ namespace FPBooru
 					psi = new ProcessStartInfo("mogrify");
 					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^ -gravity center -extent 1920x100 " + System.IO.Path.GetFullPath("static/images/" + name);
 				}
-				while (!Process.Start(psi).HasExited) {
+				psi.RedirectStandardError = true;
+				psi.UseShellExecute = false;
+				ps = Process.Start(psi);
+				while (!ps.HasExited) {
+					ps.StandardError.BaseStream.CopyTo(Console.OpenStandardError());
 					Thread.Sleep(5);
 				}
 
@@ -213,15 +223,17 @@ namespace FPBooru
 
 			Get["/upload"] = ctx => {
 				string outputbuf = "";
-				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(ctx.Request.Headers["SeSSION"], conn));
+				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
+				outputbuf += "<div id=\"interstial\">";
 				outputbuf += "<form action=\"upload\" method=\"post\" enctype=\"multipart/form-data\">";
-				outputbuf += "Currently supported files are: GIF, JPG, PNG, SVG, WebP and WebM.";
+				outputbuf += "Currently supported files are: GIF, JPG, PNG, SVG, WebP and WebM.<br />";
 				outputbuf += "<label for=\"img\">File:</label>";
-				outputbuf += "<input type=\"file\" name=\"img\" accept=\"image/gif,image/jpeg,image/png,image/svg+xml,image/webp,video/webm\" />";
+				outputbuf += "<input type=\"file\" name=\"img\" accept=\"image/gif,image/jpeg,image/png,image/svg+xml,image/webp,video/webm\" /><br />";
 				outputbuf += "<label for=\"tags\">Tags:</label>";
-				outputbuf += "<input type=\"text\" name=\"tags\" />";
+				outputbuf += "<input type=\"text\" name=\"tags\" /><br />";
 				outputbuf += "<input type=\"submit\" value=\"Upload\" />";
 				outputbuf += "</form>";
+				outputbuf += "</div>";
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=86400")
