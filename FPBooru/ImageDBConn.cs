@@ -30,7 +30,7 @@ namespace FPBooru
 			addImageCmd.Parameters.Clear();
 
 			string imagepathcsv = "";
-			foreach (string str in img.imagepaths) {
+			foreach (string str in img.imagenames) {
 				imagepathcsv += str + ",";
 			}
 			addImageCmd.Parameters.AddWithValue("@images", imagepathcsv);
@@ -96,7 +96,7 @@ namespace FPBooru
 			{
 				Image tmp = new Image();
 				tmp.id = red.GetInt64(red.GetOrdinal("id"));
-				tmp.imagepaths = red.GetString(red.GetOrdinal("imagepath_csv")).Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
+				tmp.imagenames = red.GetString(red.GetOrdinal("imagepath_csv")).Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
 				List<long> tmplist = new List<long>();
 				foreach (string i in red.GetString(red.GetOrdinal("tagids_csv")).Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries))
 				{

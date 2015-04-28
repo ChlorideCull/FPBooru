@@ -30,7 +30,7 @@ namespace FPBooru
 		public string GetImageGrid(Image[] images) {
 			string output = "";
 			foreach (Image img in images) {
-				output += "<a href=\"/image/" + img.id + "\" class=\"pic\"><img src=\"static/thumbs/" + img.imagepaths[0] + ".png\" /></a>";
+				output += "<a href=\"/image/" + img.id + "\" class=\"pic\"><img src=\"static/thumbs/" + img.thumbnailname + ".png\" /></a>";
 			}
 			return output;
 		}

@@ -12,19 +12,22 @@ using Nancy.Hosting.Self;
 using Nancy.ViewEngines;
 using Nancy.Conventions;
 using System.Diagnostics;
+using System.IO;
 
 namespace FPBooru
 {
 	static class Program
 	{
+		public static Uri OurHost = new Uri("http://192.168.56.101:8097");
+
 		static void Main(string[] args)
 		{
 			HostConfiguration hc = new HostConfiguration();
 			hc.UrlReservations.CreateAutomatically = true;
-			using (var host = new NancyHost(hc, new Uri("http://localhost:8097")))
+			using (var host = new NancyHost(hc, OurHost))
 			{
 				host.Start();
-				Console.WriteLine("Listening on localhost:8097");
+				Console.WriteLine("Listening on " + OurHost);
 				Thread.Sleep(Timeout.Infinite);
 			}
 		}
@@ -36,6 +39,7 @@ namespace FPBooru
 				return new Type[] { typeof(RawViewEngine) };
 			}
 		}
+
 
 		protected override void ConfigureConventions(Nancy.Conventions.NancyConventions nancyConventions) {
 			base.ConfigureConventions(nancyConventions);
@@ -67,7 +71,7 @@ namespace FPBooru
 			Get["/"] = ctx => {
 				string outputbuf = "";
 				int page = 0;
-				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].ToString(), conn));
+				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
 				outputbuf += "<div id=\"interstial\">";
 				outputbuf += "<h1>The Front Page.</h1>";
 				outputbuf += "The cream of the crop, the best of the best. Community submitted images, voted on by the community.";
@@ -84,10 +88,19 @@ namespace FPBooru
 					.WithModel(outputbuf);
 			};
 
+			Get["/about"] = ctx => {
+				string outputbuf = "";
+				return Negotiate
+					.WithContentType("text/html")
+					.WithHeader("cache-control", "public, max-age=300")
+					.WithView("dummy.rawhtml")
+					.WithModel(outputbuf);
+			};
+
 			Get["/login"] = ctx => {
 				string outputbuf = "";
 
-				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].ToString(), conn));
+				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
 				outputbuf += "<form action=\"login\" method=\"post\">";
 				outputbuf += "Username: <input type=\"text\" name=\"user\" />";
 				outputbuf += "Password: <input type=\"password\" name=\"pass\" />";
@@ -97,7 +110,7 @@ namespace FPBooru
 
 				return Negotiate
 					.WithContentType("text/html")
-					.WithHeader("cache-control", "public, max-age=300")
+					.WithHeader("cache-control", "public, max-age=18000")
 					.WithView("dummy.rawhtml")
 					.WithModel(outputbuf);
 			};
@@ -170,7 +183,7 @@ namespace FPBooru
 			};
 
 			Post["/upload"] = ctx => {
-				string outputbuf = "";
+				MemoryStream logio = new MemoryStream();
 
 				//Process the file
 				HttpFile file = this.Context.Request.Files.FirstOrDefault();
@@ -193,7 +206,7 @@ namespace FPBooru
 				psi.UseShellExecute = false;
 				ps = Process.Start(psi);
 				while (!ps.HasExited) {
-					ps.StandardError.BaseStream.CopyTo(Console.OpenStandardError());
+					ps.StandardError.BaseStream.CopyTo(logio);
 					Thread.Sleep(5);
 				}
 
@@ -208,17 +221,35 @@ namespace FPBooru
 				psi.UseShellExecute = false;
 				ps = Process.Start(psi);
 				while (!ps.HasExited) {
-					ps.StandardError.BaseStream.CopyTo(Console.OpenStandardError());
+					ps.StandardError.BaseStream.CopyTo(logio);
 					Thread.Sleep(5);
 				}
 
 				//Add to the database, resolve tags, create them if not found.
+				Image img = new Image();
+				img.imagenames = new string[] {name};
+				img.thumbnailname = name;
+				var ourid = imgconn.AddImage(img);
 
-				return Negotiate
-					.WithContentType("text/html")
-					.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
-					.WithView("dummy.rawhtml")
-					.WithModel(outputbuf);
+				if (ourid != 0) {
+					return Negotiate
+						.WithStatusCode(Nancy.HttpStatusCode.TemporaryRedirect)
+						.WithHeader("Location", new Uri(Program.OurHost, "/image/" + ourid).ToString());
+				} else {
+					string outputbuf = "";
+					outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
+					outputbuf += "<div id=\"interstial\">";
+					outputbuf += "<h1>There was an error uploading your image!</h1>";
+					outputbuf += "A log has been saved on the server. Please contact the admin.";
+					outputbuf += "</div>";
+					outputbuf += pb.GetBottom();
+					return Negotiate
+						.WithContentType("text/html")
+						.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
+						.WithView("dummy.rawhtml")
+						.WithModel(outputbuf)
+						.WithStatusCode(Nancy.HttpStatusCode.InternalServerError);
+				}
 			};
 
 			Get["/upload"] = ctx => {
