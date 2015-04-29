@@ -2,6 +2,7 @@ CREATE DATABASE IF NOT EXISTS `fpbooru`;
 
 CREATE TABLE IF NOT EXISTS `fpbooru`.`images` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `thumbnailimg` VARCHAR(255) NOT NULL,
   `tagids_csv` VARCHAR(255) NOT NULL,
   `imagepath_csv` VARCHAR(255) NOT NULL,
   `time_created` DATETIME NOT NULL,

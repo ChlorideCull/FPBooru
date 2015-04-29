@@ -198,12 +198,13 @@ namespace FPBooru
 				ProcessStartInfo psi;
 				Process ps;
 
+				//TODO: Fix shell command injection!
 				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
 					psi = new ProcessStartInfo("mogrify.exe");
 					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^^ -gravity center -extent 648x324 " + System.IO.Path.GetFullPath("static/images/" + name);
 				} else {
 					psi = new ProcessStartInfo("mogrify");
-					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^ -gravity center -extent 648x324 " + System.IO.Path.GetFullPath("static/images/" + name);
+					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^ -gravity center -extent 648x324 \"" + System.IO.Path.GetFullPath("static/images/" + name) + "\"";
 				}
 				psi.RedirectStandardError = true;
 				psi.UseShellExecute = false;
@@ -218,7 +219,7 @@ namespace FPBooru
 					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^^ -gravity center -extent 1920x100 " + System.IO.Path.GetFullPath("static/images/" + name);
 				} else {
 					psi = new ProcessStartInfo("mogrify");
-					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^ -gravity center -extent 1920x100 " + System.IO.Path.GetFullPath("static/images/" + name);
+					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^ -gravity center -extent 1920x100 \"" + System.IO.Path.GetFullPath("static/images/" + name) + "\"";
 				}
 				psi.RedirectStandardError = true;
 				psi.UseShellExecute = false;
