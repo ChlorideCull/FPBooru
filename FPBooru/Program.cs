@@ -236,6 +236,10 @@ namespace FPBooru
 				img.tagids = new long[] {};
 				var ourid = imgconn.AddImage(img);
 
+				#if DEBUG
+				logio.CopyTo(Console.OpenStandardError());
+				#endif
+
 				if (ourid != 0) {
 					return Negotiate
 						.WithStatusCode(Nancy.HttpStatusCode.TemporaryRedirect)
