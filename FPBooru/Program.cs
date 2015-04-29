@@ -190,7 +190,7 @@ namespace FPBooru
 
 				//Process the file
 				HttpFile file = this.Context.Request.Files.FirstOrDefault();
-				string name = ((long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds) + "_" + file.Name;
+				string name = ((long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds) + "_" + (new Random()).Next() + System.IO.Path.GetExtension(file.Name);
 				System.IO.FileStream mainfile = System.IO.File.Create(System.IO.Path.GetFullPath("static/images/" + name));
 
 				file.Value.CopyTo(mainfile);
@@ -206,13 +206,17 @@ namespace FPBooru
 					psi = new ProcessStartInfo("mogrify");
 					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^ -gravity center -extent 648x324 \"" + System.IO.Path.GetFullPath("static/images/" + name) + "\"";
 				}
+				psi.RedirectStandardOutput = true;
 				psi.RedirectStandardError = true;
 				psi.UseShellExecute = false;
 				ps = Process.Start(psi);
 				while (!ps.HasExited) {
-					ps.StandardError.BaseStream.CopyTo(logio);
 					Thread.Sleep(5);
 				}
+				logio.Write(new byte[] {(byte)'E', (byte)'R', (byte)'R', (byte)'\n'}, 0, 4);
+				ps.StandardError.BaseStream.CopyTo(logio);
+				logio.Write(new byte[] {(byte)'O', (byte)'U', (byte)'T', (byte)'\n'}, 0, 4);
+				ps.StandardOutput.BaseStream.CopyTo(logio);
 
 				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
 					psi = new ProcessStartInfo("mogrify.exe");
@@ -221,13 +225,17 @@ namespace FPBooru
 					psi = new ProcessStartInfo("mogrify");
 					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^ -gravity center -extent 1920x100 \"" + System.IO.Path.GetFullPath("static/images/" + name) + "\"";
 				}
+				psi.RedirectStandardOutput = true;
 				psi.RedirectStandardError = true;
 				psi.UseShellExecute = false;
 				ps = Process.Start(psi);
 				while (!ps.HasExited) {
-					ps.StandardError.BaseStream.CopyTo(logio);
 					Thread.Sleep(5);
 				}
+				logio.Write(new byte[] {(byte)'E', (byte)'R', (byte)'R', (byte)'\n'}, 0, 4);
+				ps.StandardError.BaseStream.CopyTo(logio);
+				logio.Write(new byte[] {(byte)'O', (byte)'U', (byte)'T', (byte)'\n'}, 0, 4);
+				ps.StandardOutput.BaseStream.CopyTo(logio);
 
 				//Add to the database, resolve tags, create them if not found.
 				Image img = new Image();
@@ -237,7 +245,9 @@ namespace FPBooru
 				var ourid = imgconn.AddImage(img);
 
 				#if DEBUG
-				logio.CopyTo(Console.OpenStandardError());
+				FileStream fslog = File.OpenWrite((new Random()).Next() + ".log");
+				logio.CopyTo(fslog);
+				fslog.Close();
 				#endif
 
 				if (ourid != 0) {
