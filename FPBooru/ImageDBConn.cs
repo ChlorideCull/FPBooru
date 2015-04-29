@@ -13,7 +13,7 @@ namespace FPBooru
 		MySqlCommand addImageCmd;
 
 		public ImageDBConn(MySqlConnection conn) {
-			addImageCmd = new MySqlCommand("INSERT INTO fpbooru.images (imagepath_csv, tagids_csv, time_created, time_updated) VALUES (@id, '@images', '@tagids', NOW(), NOW());", conn);
+			addImageCmd = new MySqlCommand("INSERT INTO fpbooru.images (imagepath_csv, tagids_csv, time_created, time_updated) VALUES ('@images', '@tagids', UTC_TIMESTAMP(), UTC_TIMESTAMP());", conn);
 			getImageCmd = new MySqlCommand("SELECT id, imagepath_csv, tagids_csv FROM fpbooru.images ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
 			addTagCmd = new MySqlCommand("INSERT INTO fpbooru.tags (imageids_csv, name) VALUES (``, `@name`);", conn);
 			resolveTagCmd = new MySqlCommand("SELECT id FROM fpbooru.tags WHERE name=`@nom`;", conn);
