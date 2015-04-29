@@ -238,6 +238,8 @@ namespace FPBooru
 				if (ourid != 0) {
 					return Negotiate
 						.WithStatusCode(Nancy.HttpStatusCode.TemporaryRedirect)
+						.WithView("dummy.rawhtml")
+						.WithModel("")
 						.WithHeader("Location", new Uri(Program.OurHost, "/image/" + ourid).ToString());
 				} else {
 					string outputbuf = "";
