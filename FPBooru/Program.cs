@@ -186,7 +186,7 @@ namespace FPBooru
 			};
 
 			Post["/upload"] = ctx => {
-				MemoryStream logio = new MemoryStream();
+				string output = "";
 
 				//Process the file
 				HttpFile file = this.Context.Request.Files.FirstOrDefault();
@@ -197,8 +197,8 @@ namespace FPBooru
 
 				ProcessStartInfo psi;
 				Process ps;
+				bool failed = false;
 
-				//TODO: Fix shell command injection!
 				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
 					psi = new ProcessStartInfo("mogrify.exe");
 					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^^ -gravity center -extent 648x324 " + System.IO.Path.GetFullPath("static/images/" + name);
@@ -206,17 +206,13 @@ namespace FPBooru
 					psi = new ProcessStartInfo("mogrify");
 					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^ -gravity center -extent 648x324 \"" + System.IO.Path.GetFullPath("static/images/" + name) + "\"";
 				}
-				psi.RedirectStandardOutput = true;
 				psi.RedirectStandardError = true;
 				psi.UseShellExecute = false;
 				ps = Process.Start(psi);
-				while (!ps.HasExited) {
-					Thread.Sleep(5);
-				}
-				logio.Write(new byte[] {(byte)'E', (byte)'R', (byte)'R', (byte)'\n'}, 0, 4);
-				ps.StandardError.BaseStream.CopyTo(logio);
-				logio.Write(new byte[] {(byte)'O', (byte)'U', (byte)'T', (byte)'\n'}, 0, 4);
-				ps.StandardOutput.BaseStream.CopyTo(logio);
+				output += ps.StandardError.ReadToEnd() + "\r\n";
+				while (!ps.HasExited)
+					Thread.Sleep(0);
+				failed = (ps.ExitCode != 0);
 
 				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
 					psi = new ProcessStartInfo("mogrify.exe");
@@ -225,32 +221,25 @@ namespace FPBooru
 					psi = new ProcessStartInfo("mogrify");
 					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^ -gravity center -extent 1920x100 \"" + System.IO.Path.GetFullPath("static/images/" + name) + "\"";
 				}
-				psi.RedirectStandardOutput = true;
 				psi.RedirectStandardError = true;
 				psi.UseShellExecute = false;
 				ps = Process.Start(psi);
-				while (!ps.HasExited) {
-					Thread.Sleep(5);
+				output += ps.StandardError.ReadToEnd() + "\r\n";
+				while (!ps.HasExited)
+					Thread.Sleep(0);
+				failed = (ps.ExitCode != 0);
+
+				long ourid = 0;
+				if (!failed) {
+					//Add to the database, resolve tags, create them if not found.
+					Image img = new Image();
+					img.imagenames = new string[] {name};
+					img.thumbnailname = name;
+					img.tagids = new long[] {};
+					ourid = imgconn.AddImage(img);
 				}
-				logio.Write(new byte[] {(byte)'E', (byte)'R', (byte)'R', (byte)'\n'}, 0, 4);
-				ps.StandardError.BaseStream.CopyTo(logio);
-				logio.Write(new byte[] {(byte)'O', (byte)'U', (byte)'T', (byte)'\n'}, 0, 4);
-				ps.StandardOutput.BaseStream.CopyTo(logio);
 
-				//Add to the database, resolve tags, create them if not found.
-				Image img = new Image();
-				img.imagenames = new string[] {name};
-				img.thumbnailname = name;
-				img.tagids = new long[] {};
-				var ourid = imgconn.AddImage(img);
-
-				#if DEBUG
-				FileStream fslog = File.OpenWrite((new Random()).Next() + ".log");
-				logio.CopyTo(fslog);
-				fslog.Close();
-				#endif
-
-				if (ourid != 0) {
+				if ((ourid != 0) && !failed) {
 					return Negotiate
 						.WithStatusCode(Nancy.HttpStatusCode.TemporaryRedirect)
 						.WithView("dummy.rawhtml")
@@ -261,8 +250,11 @@ namespace FPBooru
 					outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
 					outputbuf += "<div id=\"interstial\">";
 					outputbuf += "<h1>There was an error uploading your image!</h1>";
-					outputbuf += "A log has been saved on the server. Please contact the admin.";
-					outputbuf += "</div>";
+					outputbuf += "If you believe there is something wrong with the server, contact an admin with the log below.";
+					outputbuf += "<br />";
+					outputbuf += "Guru Meditation: <br /><code>";
+					outputbuf += output;
+					outputbuf += "</code></div>";
 					outputbuf += pb.GetBottom();
 					return Negotiate
 						.WithContentType("text/html")
