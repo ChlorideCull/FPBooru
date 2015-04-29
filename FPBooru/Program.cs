@@ -10,9 +10,9 @@ using System.Threading;
 using Nancy;
 using Nancy.Hosting.Self;
 using Nancy.ViewEngines;
-using Nancy.Conventions;
 using System.Diagnostics;
 using System.IO;
+using Nancy.Conventions;
 
 namespace FPBooru
 {
@@ -24,6 +24,9 @@ namespace FPBooru
 		{
 			HostConfiguration hc = new HostConfiguration();
 			hc.UrlReservations.CreateAutomatically = true;
+			#if DEBUG
+			StaticConfiguration.DisableErrorTraces = false;
+			#endif
 			using (var host = new NancyHost(hc, OurHost))
 			{
 				host.Start();
@@ -33,7 +36,7 @@ namespace FPBooru
 		}
 	}
 
-	public class CustomBootstrap : DefaultNancyBootstrapper {
+	public class CustomBootstrap : DefaultNancyBootstrapper { 
 		protected override IEnumerable<Type> ViewEngines {
 			get {
 				return new Type[] { typeof(RawViewEngine) };
@@ -229,6 +232,7 @@ namespace FPBooru
 				Image img = new Image();
 				img.imagenames = new string[] {name};
 				img.thumbnailname = name;
+				img.tagids = new long[] {};
 				var ourid = imgconn.AddImage(img);
 
 				if (ourid != 0) {
