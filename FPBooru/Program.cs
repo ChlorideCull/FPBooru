@@ -54,7 +54,7 @@ namespace FPBooru
 		protected override void ApplicationStartup(Nancy.TinyIoc.TinyIoCContainer container, Nancy.Bootstrapper.IPipelines pipelines) {
 			pipelines.AfterRequest += ctx => {
 				string etag = ctx.Request.Headers.IfNoneMatch.FirstOrDefault();
-				if (etag == ctx.Response.Headers["Etag"]) {
+				if (etag == ctx.Response.Headers["ETag"]) {
 					ctx.Response.StatusCode = Nancy.HttpStatusCode.NotModified;
 					MemoryStream dummystream = new MemoryStream();
 					ctx.Response.Contents = new Action<Stream>(dummystream);

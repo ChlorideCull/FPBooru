@@ -28,7 +28,7 @@ namespace FPBooru
 				etag = Convert.ToBase64String(gen.ComputeHash(System.Text.Encoding.UTF8.GetBytes((string)Model)));
 			}
 			HtmlResponse resp = new HtmlResponse(RetCode, ReturnContent);
-			resp.Headers["Etag"] = etag;
+			resp.Headers["ETag"] = etag;
 			return resp;
 		}
 
