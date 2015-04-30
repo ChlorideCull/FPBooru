@@ -58,6 +58,7 @@
     <Compile Include="ImageDBConn.cs" />
     <Compile Include="Image.cs" />
     <Compile Include="RawViewer.cs" />
+    <Compile Include="FileIO.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

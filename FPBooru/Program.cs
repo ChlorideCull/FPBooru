@@ -208,43 +208,31 @@ namespace FPBooru
 				mainfile.Close();
 				output += "--> File retrieved\n";
 
-				ProcessStartInfo psi;
-				Process ps;
-				bool failed = false;
+				bool failed;
+				while (true) {
+					output += "--> Generating thumbnail\n";
+					output += FileIO.GenerateImage("static/thumbs/",
+						System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name),
+						"648x324", "jpg", out failed);
 
-				output += "--> Generating thumbnail\n";
-				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
-					psi = new ProcessStartInfo("mogrify.exe");
-					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^^ -gravity center -extent 648x324 -format jpg " + System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name);
-				} else {
-					psi = new ProcessStartInfo("mogrify");
-					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^ -gravity center -extent 648x324 -format jpg \"" + System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name) + "\"";
+					output += "--> Generating header\n";
+					output += FileIO.GenerateImage("static/headers/",
+						System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name),
+						"1920x100", "png", out failed);
+					
+					output += "--> Mogrify reports " + (failed?"that it didn't work. Attempting repairs.":"nothing unusual.") + "\n";
+					if (failed)
+						FileIO.RepairImage(System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name),
+							out failed);
+					if (failed) {
+						output += "--> Repair failed. Bailing.\n";
+						break;
+					} else {
+						output += "--> Repair successful. Eventual animation might be missing.\n";
+						name = Path.ChangeExtension(name, "png");
+					}
 				}
-				psi.RedirectStandardError = true;
-				psi.UseShellExecute = false;
-				ps = Process.Start(psi);
-				output += ps.StandardError.ReadToEnd();
-				while (!ps.HasExited)
-					Thread.Sleep(0);
-				failed = (ps.ExitCode != 0);
 
-				output += "--> Generating header\n";
-				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
-					psi = new ProcessStartInfo("mogrify.exe");
-					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^^ -gravity center -extent 1920x100 -format png " + System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name);
-				} else {
-					psi = new ProcessStartInfo("mogrify");
-					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^ -gravity center -extent 1920x100 -format png \"" + System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name)+ "\"";
-				}
-				psi.RedirectStandardError = true;
-				psi.UseShellExecute = false;
-				ps = Process.Start(psi);
-				output += ps.StandardError.ReadToEnd();
-				while (!ps.HasExited)
-					Thread.Sleep(0);
-				failed = (ps.ExitCode != 0);
-
-				output += "--> Mogrify reports " + (failed?"that it didn't work. Bailing.":"nothing unusual.") + "\n";
 				long ourid = 0;
 				if (!failed) {
 					//Add to the database, resolve tags, create them if not found.
