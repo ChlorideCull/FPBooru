@@ -52,14 +52,14 @@ namespace FPBooru
 		}
 
 		protected override void ApplicationStartup(Nancy.TinyIoc.TinyIoCContainer container, Nancy.Bootstrapper.IPipelines pipelines) {
-			pipelines.AfterRequest += ctx => {
+			pipelines.AfterRequest.AddItemToEndOfPipeline(new Action<NancyContext>(ctx => {
 				string etag = ctx.Request.Headers.IfNoneMatch.FirstOrDefault();
-				if (etag == ctx.Response.Headers["ETag"]) {
+				string remoteetag;
+				if (ctx.Response.Headers.TryGetValue("ETag", out remoteetag) && (etag == remoteetag)) {
 					ctx.Response.StatusCode = Nancy.HttpStatusCode.NotModified;
-					MemoryStream dummystream = new MemoryStream();
-					ctx.Response.Contents = new Action<Stream>(dummystream);
+					ctx.Response.Contents = null;
 				}
-			};
+			}));
 			base.ApplicationStartup(container, pipelines);
 		}
 	}
@@ -97,7 +97,7 @@ namespace FPBooru
 				outputbuf += pb.GetBottom();
 				return Negotiate
 					.WithContentType("text/html")
-					.WithHeader("cache-control", "public, max-age=100")
+					.WithHeader("cache-control", "public, max-age=60")
 					.WithView("dummy.rawhtml")
 					.WithModel(outputbuf);
 			};
