@@ -209,7 +209,7 @@ namespace FPBooru
 				psi.RedirectStandardError = true;
 				psi.UseShellExecute = false;
 				ps = Process.Start(psi);
-				output += ps.StandardError.ReadToEnd() + "\r\n";
+				output += ps.StandardError.ReadToEnd();
 				while (!ps.HasExited)
 					Thread.Sleep(0);
 				failed = (ps.ExitCode != 0);
@@ -224,7 +224,7 @@ namespace FPBooru
 				psi.RedirectStandardError = true;
 				psi.UseShellExecute = false;
 				ps = Process.Start(psi);
-				output += ps.StandardError.ReadToEnd() + "\r\n";
+				output += ps.StandardError.ReadToEnd();
 				while (!ps.HasExited)
 					Thread.Sleep(0);
 				failed = (ps.ExitCode != 0);
@@ -250,11 +250,17 @@ namespace FPBooru
 					outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
 					outputbuf += "<div id=\"interstial\">";
 					outputbuf += "<h1>There was an error uploading your image!</h1>";
-					outputbuf += "If you believe there is something wrong with the server, contact an admin with the log below.";
+					outputbuf += "If you believe there is something wrong with the server, contact an admin with the log below.<br />";
+					outputbuf += "There are a couple of things that you can fix yourself, however.<br />";
+
+					outputbuf += "<ul>";
+					outputbuf += "<li>If the guru meditation below mentions \"corrupt image\" or \"crc error\", make sure that it is an image, and try reconstructing the file by opening it in paint and saving it as PNG.</li>";
+					outputbuf += "</ul>";
+
 					outputbuf += "<br />";
-					outputbuf += "Guru Meditation: <br /><code>";
+					outputbuf += "Guru Meditation: <br /><pre>";
 					outputbuf += output;
-					outputbuf += "</code></div>";
+					outputbuf += "</pre></div>";
 					outputbuf += pb.GetBottom();
 					return Negotiate
 						.WithContentType("text/html")
