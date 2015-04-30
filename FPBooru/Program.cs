@@ -201,10 +201,10 @@ namespace FPBooru
 
 				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
 					psi = new ProcessStartInfo("mogrify.exe");
-					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^^ -gravity center -extent 648x324 " + System.IO.Path.GetFullPath("static/images/" + name) + ".jpg";
+					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^^ -gravity center -extent 648x324 -format jpg " + System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name);
 				} else {
 					psi = new ProcessStartInfo("mogrify");
-					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^ -gravity center -extent 648x324 \"" + System.IO.Path.GetFullPath("static/images/" + name) + ".jpg\"";
+					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^ -gravity center -extent 648x324 -format jpg \"" + System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name) + "\"";
 				}
 				psi.RedirectStandardError = true;
 				psi.UseShellExecute = false;
@@ -216,10 +216,10 @@ namespace FPBooru
 
 				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
 					psi = new ProcessStartInfo("mogrify.exe");
-					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^^ -gravity center -extent 1920x100 " + System.IO.Path.GetFullPath("static/images/" + name) + ".png";
+					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^^ -gravity center -extent 1920x100 -format png " + System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name);
 				} else {
 					psi = new ProcessStartInfo("mogrify");
-					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^ -gravity center -extent 1920x100 \"" + System.IO.Path.GetFullPath("static/images/" + name) + ".png\"";
+					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^ -gravity center -extent 1920x100 -format png \"" + System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name)+ "\"";
 				}
 				psi.RedirectStandardError = true;
 				psi.UseShellExecute = false;
@@ -240,11 +240,18 @@ namespace FPBooru
 				}
 
 				if ((ourid != 0) && !failed) {
+					string outputbuf = "";
+					outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
+					outputbuf += "<div id=\"interstial\">";
+					outputbuf += "<h1>Upload complete!</h1>";
+					outputbuf += "You can view your image <a href=\"/image/" + ourid + "\">here</a>.";
+					outputbuf += "</div>";
+					outputbuf += pb.GetBottom();
 					return Negotiate
-						.WithStatusCode(Nancy.HttpStatusCode.TemporaryRedirect)
+						.WithContentType("text/html")
+						.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
 						.WithView("dummy.rawhtml")
-						.WithModel("")
-						.WithHeader("Location", new Uri(Program.OurHost, "/image/" + ourid).ToString());
+						.WithModel(outputbuf);
 				} else {
 					string outputbuf = "";
 					outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
