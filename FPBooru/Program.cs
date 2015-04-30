@@ -205,6 +205,7 @@ namespace FPBooru
 				System.IO.FileStream mainfile = System.IO.File.Create(System.IO.Path.GetFullPath("static/images/" + name + System.IO.Path.GetExtension(file.Name)));
 
 				file.Value.CopyTo(mainfile);
+				mainfile.Close();
 				output += "--> File retrieved\n";
 
 				ProcessStartInfo psi;
