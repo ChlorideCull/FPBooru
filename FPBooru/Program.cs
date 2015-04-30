@@ -190,8 +190,8 @@ namespace FPBooru
 
 				//Process the file
 				HttpFile file = this.Context.Request.Files.FirstOrDefault();
-				string name = ((long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds) + "_" + (new Random()).Next() + System.IO.Path.GetExtension(file.Name);
-				System.IO.FileStream mainfile = System.IO.File.Create(System.IO.Path.GetFullPath("static/images/" + name));
+				string name = ((long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds) + "_" + (new Random()).Next();
+				System.IO.FileStream mainfile = System.IO.File.Create(System.IO.Path.GetFullPath("static/images/" + name + System.IO.Path.GetExtension(file.Name)));
 
 				file.Value.CopyTo(mainfile);
 
@@ -201,10 +201,10 @@ namespace FPBooru
 
 				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
 					psi = new ProcessStartInfo("mogrify.exe");
-					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^^ -gravity center -extent 648x324 " + System.IO.Path.GetFullPath("static/images/" + name);
+					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^^ -gravity center -extent 648x324 " + System.IO.Path.GetFullPath("static/images/" + name) + ".jpg";
 				} else {
 					psi = new ProcessStartInfo("mogrify");
-					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^ -gravity center -extent 648x324 \"" + System.IO.Path.GetFullPath("static/images/" + name) + "\"";
+					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^ -gravity center -extent 648x324 \"" + System.IO.Path.GetFullPath("static/images/" + name) + ".jpg\"";
 				}
 				psi.RedirectStandardError = true;
 				psi.UseShellExecute = false;
@@ -216,10 +216,10 @@ namespace FPBooru
 
 				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
 					psi = new ProcessStartInfo("mogrify.exe");
-					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^^ -gravity center -extent 1920x100 " + System.IO.Path.GetFullPath("static/images/" + name);
+					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^^ -gravity center -extent 1920x100 " + System.IO.Path.GetFullPath("static/images/" + name) + ".png";
 				} else {
 					psi = new ProcessStartInfo("mogrify");
-					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^ -gravity center -extent 1920x100 \"" + System.IO.Path.GetFullPath("static/images/" + name) + "\"";
+					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^ -gravity center -extent 1920x100 \"" + System.IO.Path.GetFullPath("static/images/" + name) + ".png\"";
 				}
 				psi.RedirectStandardError = true;
 				psi.UseShellExecute = false;
@@ -233,8 +233,8 @@ namespace FPBooru
 				if (!failed) {
 					//Add to the database, resolve tags, create them if not found.
 					Image img = new Image();
-					img.imagenames = new string[] {name};
-					img.thumbnailname = name;
+					img.imagenames = new string[] {name + System.IO.Path.GetExtension(file.Name)};
+					img.thumbnailname = name + ".jpg";
 					img.tagids = new long[] {};
 					ourid = imgconn.AddImage(img);
 				}
