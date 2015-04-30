@@ -205,11 +205,13 @@ namespace FPBooru
 				System.IO.FileStream mainfile = System.IO.File.Create(System.IO.Path.GetFullPath("static/images/" + name + System.IO.Path.GetExtension(file.Name)));
 
 				file.Value.CopyTo(mainfile);
+				output += "--> File retrieved\n";
 
 				ProcessStartInfo psi;
 				Process ps;
 				bool failed = false;
 
+				output += "--> Generating thumbnail\n";
 				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
 					psi = new ProcessStartInfo("mogrify.exe");
 					psi.Arguments = "-path static/thumbs/ -thumbnail 648x324^^ -gravity center -extent 648x324 -format jpg " + System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name);
@@ -225,6 +227,7 @@ namespace FPBooru
 					Thread.Sleep(0);
 				failed = (ps.ExitCode != 0);
 
+				output += "--> Generating header\n";
 				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
 					psi = new ProcessStartInfo("mogrify.exe");
 					psi.Arguments = "-path static/headers/ -thumbnail 1920x100^^ -gravity center -extent 1920x100 -format png " + System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name);
@@ -240,6 +243,7 @@ namespace FPBooru
 					Thread.Sleep(0);
 				failed = (ps.ExitCode != 0);
 
+				output += "--> Mogrify reports " + (failed?"that it didn't work. Bailing.":"nothing unusual.") + "\n";
 				long ourid = 0;
 				if (!failed) {
 					//Add to the database, resolve tags, create them if not found.
@@ -248,6 +252,10 @@ namespace FPBooru
 					img.thumbnailname = name + ".jpg";
 					img.tagids = new long[] {};
 					ourid = imgconn.AddImage(img);
+					output += "--> Image registered in database as ID " + ourid + "\n";
+				} else {
+					File.Delete(System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name));
+					output += "--> Image deleted to save space.\n";
 				}
 
 				if ((ourid != 0) && !failed) {
@@ -256,7 +264,11 @@ namespace FPBooru
 					outputbuf += "<div id=\"interstial\">";
 					outputbuf += "<h1>Upload complete!</h1>";
 					outputbuf += "You can view your image <a href=\"/image/" + ourid + "\">here</a>.";
-					outputbuf += "</div>";
+
+					outputbuf += "<br />";
+					outputbuf += "Guru Meditation: <br /><pre>";
+					outputbuf += output;
+					outputbuf += "</pre></div>";
 					outputbuf += pb.GetBottom();
 					return Negotiate
 						.WithContentType("text/html")
