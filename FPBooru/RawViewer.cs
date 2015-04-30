@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using Nancy.ViewEngines;
 using Nancy.Responses;
+using System.Security.Cryptography;
+using System;
 
-namespace Nancy.ViewEngines
+namespace FPBooru
 {
 	public class RawViewEngine : IViewEngine
 	{
@@ -21,7 +23,13 @@ namespace Nancy.ViewEngines
 
 		public Response RenderView(ViewLocationResult viewLocationResult, dynamic model, IRenderContext renderContext) {
 			Model = model;
-			return new HtmlResponse(RetCode, ReturnContent);
+			string etag;
+			using (SHA1 gen = new SHA1Managed()) {
+				etag = Convert.ToBase64String(gen.ComputeHash(System.Text.Encoding.UTF8.GetBytes((string)Model)));
+			}
+			HtmlResponse resp = new HtmlResponse(RetCode, ReturnContent);
+			resp.Headers["Etag"] = etag;
+			return resp;
 		}
 
 		protected void ReturnContent(System.IO.Stream stream) {
