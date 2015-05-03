@@ -6,21 +6,24 @@ namespace FPBooru
 {
 	public class ImageDBConn
 	{
+		MySqlCommand addImageCmd;
 		MySqlCommand getImageCmd;
+		MySqlCommand getImagesCmd;
 		MySqlCommand getImageByTagsCmd;
 		MySqlCommand addTagCmd;
 		MySqlCommand resolveTagCmd;
-		MySqlCommand addImageCmd;
 
 		public ImageDBConn(MySqlConnection conn) {
 			addImageCmd = new MySqlCommand("INSERT INTO fpbooru.images (thumbnailimg, imagepath_csv, tagids_csv, time_created, time_updated) VALUES (@thumbnailimg, @images, @tagids, UTC_TIMESTAMP(), UTC_TIMESTAMP());", conn);
-			getImageCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv FROM fpbooru.images ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
+			getImageCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv FROM fpbooru.images WHERE id = @id;", conn);
+			getImagesCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv FROM fpbooru.images ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
 			addTagCmd = new MySqlCommand("INSERT INTO fpbooru.tags (imageids_csv, name) VALUES (``, @name);", conn);
 			resolveTagCmd = new MySqlCommand("SELECT id FROM fpbooru.tags WHERE name=@nom;", conn);
 			getImageByTagsCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv FROM fpbooru.images WHERE tagids_csv REGEXP @regex ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
 
 			addImageCmd.Prepare();
 			getImageCmd.Prepare();
+			getImagesCmd.Prepare();
 			addTagCmd.Prepare();
 			resolveTagCmd.Prepare();
 			getImageByTagsCmd.Prepare();
@@ -52,11 +55,18 @@ namespace FPBooru
 			return addTagCmd.LastInsertedId;
 		}
 
-		public Image[] GetImages(uint page) {
+		public Image GetImage(int id) {
 			getImageCmd.Parameters.Clear();
-			getImageCmd.Parameters.AddWithValue("@itemmin", 16 * page);
-			getImageCmd.Parameters.AddWithValue("@itemmax", 16 * (page + 1));
+			getImageCmd.Parameters.AddWithValue("@id", id);
 			MySqlDataReader red = getImageCmd.ExecuteReader();
+			return IterateImageReader(red)[0];
+		}
+
+		public Image[] GetImages(uint page) {
+			getImagesCmd.Parameters.Clear();
+			getImagesCmd.Parameters.AddWithValue("@itemmin", 16 * page);
+			getImagesCmd.Parameters.AddWithValue("@itemmax", 16 * (page + 1));
+			MySqlDataReader red = getImagesCmd.ExecuteReader();
 			return IterateImageReader(red);
 		}
 
@@ -80,7 +90,7 @@ namespace FPBooru
 		public long ResolveTagID(string tagname, bool createifnotfound) {
 			resolveTagCmd.Parameters.Clear();
 			resolveTagCmd.Parameters.AddWithValue("@nom", tagname);
-			using (MySqlDataReader red = getImageCmd.ExecuteReader()) {
+			using (MySqlDataReader red = resolveTagCmd.ExecuteReader()) {
 				if (red.Read()) {
 					return red.GetUInt32(red.GetOrdinal("id"));
 				} else if (createifnotfound) {

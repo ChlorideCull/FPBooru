@@ -115,7 +115,7 @@ namespace FPBooru
 				string outputbuf = "";
 
 				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
-				outputbuf += "<form action=\"login\" method=\"post\">";
+				outputbuf += "<form action=\"/login\" method=\"post\">";
 				outputbuf += "Username: <input type=\"text\" name=\"user\" />";
 				outputbuf += "Password: <input type=\"password\" name=\"pass\" />";
 				outputbuf += "<input type=\"submit\" value=\"Login\" />";
@@ -147,6 +147,14 @@ namespace FPBooru
 
 			Get["/image/{id:int}"] = ctx => {
 				string outputbuf = "";
+				Image img = imgconn.GetImage(Context.Parameters["id"]);
+				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
+				foreach (string imagepath in img.imagenames) {
+					outputbuf += "<img src=\"/static/images/" + imagepath + "\" />";
+				}
+				outputbuf += "<div id=\"interstial\">";
+				outputbuf += "</div>";
+				outputbuf += pb.GetBottom();
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=3600")
@@ -301,7 +309,7 @@ namespace FPBooru
 				string outputbuf = "";
 				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
 				outputbuf += "<div id=\"interstial\">";
-				outputbuf += "<form action=\"upload\" method=\"post\" enctype=\"multipart/form-data\">";
+				outputbuf += "<form action=\"/upload\" method=\"post\" enctype=\"multipart/form-data\">";
 				outputbuf += "Currently supported files are: GIF, JPG, PNG, SVG and WebP<br />";
 				outputbuf += "<label for=\"img\">File:</label>";
 				outputbuf += "<input type=\"file\" name=\"img\" accept=\"image/gif,image/jpeg,image/png,image/svg+xml,image/webp\" /><br />";
