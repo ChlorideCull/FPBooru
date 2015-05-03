@@ -149,9 +149,11 @@ namespace FPBooru
 				string outputbuf = "";
 				Image img = imgconn.GetImage(Context.Parameters["id"]);
 				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
+				outputbuf += "<div class=\"centerfix\">";
 				foreach (string imagepath in img.imagenames) {
-					outputbuf += "<img src=\"/static/images/" + imagepath + "\" />";
+					outputbuf += "<img class=\"fullimage\" src=\"/static/images/" + imagepath + "\" />";
 				}
+				outputbuf += "</div>";
 				outputbuf += "<div id=\"interstial\">";
 				outputbuf += "</div>";
 				outputbuf += pb.GetBottom();
