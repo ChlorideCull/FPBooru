@@ -84,15 +84,15 @@ namespace FPBooru
 
 			Get["/"] = ctx => {
 				string outputbuf = "";
-				int page = 0;
+				uint page;
 				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
 				outputbuf += "<div id=\"interstial\">";
 				outputbuf += "<h1>The Front Page.</h1>";
 				outputbuf += "The cream of the crop, the best of the best. Community submitted images, voted on by the community.";
 				outputbuf += "</div>";
-				outputbuf += "<span id=\"pageind\">Page " + page+1 + "</span>";
+				outputbuf += pb.GetPageIndicator(Request, out page);
 				outputbuf += "<div id=\"mainbody\">";
-				outputbuf += pb.GetImageGrid(imgconn.GetImages(0));
+				outputbuf += pb.GetImageGrid(imgconn.GetImages(page));
 				outputbuf += "</div>";
 				outputbuf += pb.GetBottom();
 				return Negotiate
@@ -156,8 +156,8 @@ namespace FPBooru
 
 			Get["/tag/{id:int}"] = ctx => {
 				string outputbuf = "";
-				int page = 0;
-				outputbuf += "<span id=\"pageind\">Page " + page+1 + "</span>";
+				uint page;
+				outputbuf += pb.GetPageIndicator(Request, out page);
 				outputbuf += "<div id=\"mainbody\">";
 				outputbuf += pb.GetImageGrid(imgconn.GetImages(page, this.Context.Parameters["id"]));
 				outputbuf += "</div>";
@@ -302,9 +302,9 @@ namespace FPBooru
 				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
 				outputbuf += "<div id=\"interstial\">";
 				outputbuf += "<form action=\"upload\" method=\"post\" enctype=\"multipart/form-data\">";
-				outputbuf += "Currently supported files are: GIF, JPG, PNG, SVG, WebP and WebM.<br />";
+				outputbuf += "Currently supported files are: GIF, JPG, PNG, SVG and WebP<br />";
 				outputbuf += "<label for=\"img\">File:</label>";
-				outputbuf += "<input type=\"file\" name=\"img\" accept=\"image/gif,image/jpeg,image/png,image/svg+xml,image/webp,video/webm\" /><br />";
+				outputbuf += "<input type=\"file\" name=\"img\" accept=\"image/gif,image/jpeg,image/png,image/svg+xml,image/webp\" /><br />";
 				outputbuf += "<label for=\"tags\">Tags:</label>";
 				outputbuf += "<input type=\"text\" name=\"tags\" /><br />";
 				outputbuf += "<input type=\"submit\" value=\"Upload\" />";

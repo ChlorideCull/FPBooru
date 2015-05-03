@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Nancy;
 
 namespace FPBooru
 {
@@ -32,6 +33,21 @@ namespace FPBooru
 			foreach (Image img in images) {
 				output += "<a href=\"/image/" + img.id + "\" class=\"pic\"><img src=\"static/thumbs/" + img.thumbnailname + "\" /></a>";
 			}
+			return output;
+		}
+
+		public string GetPageIndicator(Request rqst, out uint page) {
+			try {
+				page = (rqst.Query.page ?? 0);
+			} catch (InvalidCastException _) {
+				page = 0;
+			}
+			string output = "";
+			output += "<div id=\"interstial\">";
+			output += (page == 0)?"":"<a href=\"" + rqst.Url.Path + "?page=" + (page-1) + "\">Back</a> ";
+			output += "<span>Page " + (page+1) + "</span>";
+			output += " <a href=\"" + rqst.Url.Path + "?page=" + (page+1) + "\">Forward</a>";
+			output += "</div>";
 			return output;
 		}
 	}
