@@ -226,6 +226,9 @@ form>input {
 /* BEGIN frontpage.ppcss */
 
 #mainbody {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	
 	display: flex;
 	align-items: flex-start;
 	flex-wrap: wrap;
