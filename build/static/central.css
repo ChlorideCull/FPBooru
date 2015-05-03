@@ -236,7 +236,7 @@ form>input {
 }
 
 
-#mainbody>a.pic {
+#mainbody>div.pic {
 	display: block;
 	margin-top: 5px;
     
@@ -247,20 +247,20 @@ form>input {
 }
 
 @media (max-device-width:1000px) {
-    #mainbody>a.pic {
+    #mainbody>div.pic {
         width: 49%;
         height: auto;
     }
 }
 
 @media (max-device-width:500px) {
-    #mainbody>a.pic {
+    #mainbody>div.pic {
         width: 98%;
         height: auto;
     }
 }
 
-#mainbody>a.pic>img {	
+#mainbody>div.pic>a>img {	
 	position: relative;
 	vertical-align: middle;
 	width: 100%;
