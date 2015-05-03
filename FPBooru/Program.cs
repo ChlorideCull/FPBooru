@@ -208,28 +208,31 @@ namespace FPBooru
 				mainfile.Close();
 				output += "--> File retrieved\n";
 
-				bool failed;
-				while (true) {
+				bool failed = false;
+				string extension = System.IO.Path.GetExtension(file.Name);
+				for (int i = 0; i < 3; i++) {
 					output += "--> Generating thumbnail\n";
 					output += FileIO.GenerateImage("static/thumbs/",
-						System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name),
+						System.IO.Path.GetFullPath("static/images/" + name) + extension,
 						"648x324", "jpg", out failed);
 
 					output += "--> Generating header\n";
 					output += FileIO.GenerateImage("static/headers/",
-						System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name),
+						System.IO.Path.GetFullPath("static/images/" + name) + extension,
 						"1920x100", "png", out failed);
 					
 					output += "--> Mogrify reports " + (failed?"that it didn't work. Attempting repairs.":"nothing unusual.") + "\n";
-					if (failed)
-						FileIO.RepairImage(System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name),
-							out failed);
 					if (failed) {
-						output += "--> Repair failed. Bailing.\n";
-						break;
+						output += FileIO.RepairImage(System.IO.Path.GetFullPath("static/images/" + name) + extension, out failed);
+						if (failed) {
+							output += "--> Repair failed. Bailing.\n";
+							break;
+						} else {
+							output += "--> Repair successful. Eventual animation might be missing.\n";
+							extension = ".png";
+						}
 					} else {
-						output += "--> Repair successful. Eventual animation might be missing.\n";
-						name = Path.ChangeExtension(name, "png");
+						break;
 					}
 				}
 
@@ -243,8 +246,12 @@ namespace FPBooru
 					ourid = imgconn.AddImage(img);
 					output += "--> Image registered in database as ID " + ourid + "\n";
 				} else {
+					#if DEBUG
+					output += "--> File is named " + name + System.IO.Path.GetExtension(file.Name);
+					#else
 					File.Delete(System.IO.Path.GetFullPath("static/images/" + name) + System.IO.Path.GetExtension(file.Name));
 					output += "--> Image deleted to save space.\n";
+					#endif
 				}
 
 				if ((ourid != 0) && !failed) {
