@@ -160,7 +160,7 @@ form>input {
     flex-direction: column;
 }
 
-#body-class>#interstial {
+div.interstial {
     margin-top: 10px;
     margin-left: 10px;
     margin-right: 10px;
@@ -173,7 +173,7 @@ form>input {
     border-radius: 5px;
 }
 
-#body-class>#interstial>h1 {
+div.interstial>h1 {
     margin: 2px;
 }
 

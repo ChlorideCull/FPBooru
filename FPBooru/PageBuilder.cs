@@ -43,10 +43,12 @@ namespace FPBooru
 				page = 0;
 			}
 			string output = "";
-			output += "<div id=\"interstial\">";
+			output += "<div class=\"centerfix\">";
+			output += "<div class=\"interstial\">";
 			output += (page == 0)?"":"<a href=\"" + rqst.Url.Path + "?page=" + (page-1) + "\">Back</a> ";
 			output += "<span>Page " + (page+1) + "</span>";
 			output += " <a href=\"" + rqst.Url.Path + "?page=" + (page+1) + "\">Forward</a>";
+			output += "</div>";
 			output += "</div>";
 			return output;
 		}

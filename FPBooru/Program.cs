@@ -86,7 +86,7 @@ namespace FPBooru
 				string outputbuf = "";
 				uint page;
 				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
-				outputbuf += "<div id=\"interstial\">";
+				outputbuf += "<div class=\"interstial\">";
 				outputbuf += "<h1>The Front Page.</h1>";
 				outputbuf += "The cream of the crop, the best of the best. Community submitted images, voted on by the community.";
 				outputbuf += "</div>";
@@ -154,7 +154,7 @@ namespace FPBooru
 					outputbuf += "<img class=\"fullimage\" src=\"/static/images/" + imagepath + "\" />";
 				}
 				outputbuf += "</div>";
-				outputbuf += "<div id=\"interstial\">";
+				outputbuf += "<div class=\"interstial\">";
 				outputbuf += "</div>";
 				outputbuf += pb.GetBottom();
 				return Negotiate
@@ -267,7 +267,7 @@ namespace FPBooru
 				if ((ourid != 0) && !failed) {
 					string outputbuf = "";
 					outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
-					outputbuf += "<div id=\"interstial\">";
+					outputbuf += "<div class=\"interstial\">";
 					outputbuf += "<h1>Upload complete!</h1>";
 					outputbuf += "You can view your image <a href=\"/image/" + ourid + "\">here</a>.";
 
@@ -284,7 +284,7 @@ namespace FPBooru
 				} else {
 					string outputbuf = "";
 					outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
-					outputbuf += "<div id=\"interstial\">";
+					outputbuf += "<div class=\"interstial\">";
 					outputbuf += "<h1>There was an error uploading your image!</h1>";
 					outputbuf += "If you believe there is something wrong with the server, contact an admin with the log below.<br />";
 					outputbuf += "There are a couple of things that you can fix yourself, however.<br />";
@@ -310,7 +310,7 @@ namespace FPBooru
 			Get["/upload"] = ctx => {
 				string outputbuf = "";
 				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
-				outputbuf += "<div id=\"interstial\">";
+				outputbuf += "<div class=\"interstial\">";
 				outputbuf += "<form action=\"/upload\" method=\"post\" enctype=\"multipart/form-data\">";
 				outputbuf += "Currently supported files are: GIF, JPG, PNG, SVG and WebP<br />";
 				outputbuf += "<label for=\"img\">File:</label>";
