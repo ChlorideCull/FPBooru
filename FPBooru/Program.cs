@@ -78,14 +78,14 @@ namespace FPBooru
 		{
 			this.conn = new MySqlConnection("Server=" + MYSQL_IP + ";Database=fpbooru;Uid=" + MYSQL_USER + ";Pwd=" + MYSQL_PASS + ";SslMode=Preferred;ConvertZeroDateTime=True;");
 			conn.Open();
-			this.pb = new PageBuilder();
+			this.pb = new PageBuilder(conn);
 			this.imgconn = new ImageDBConn(conn);
 
 
 			Get["/"] = ctx => {
 				string outputbuf = "";
 				uint page;
-				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
+				outputbuf += pb.GetHeader(Request);
 				outputbuf += "<div class=\"interstial\">";
 				outputbuf += "<h1>The Front Page.</h1>";
 				outputbuf += "The cream of the crop, the best of the best. Community submitted images, voted on by the community.";
@@ -114,7 +114,7 @@ namespace FPBooru
 			Get["/login"] = ctx => {
 				string outputbuf = "";
 
-				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
+				outputbuf += pb.GetHeader(Request);
 				outputbuf += "<form action=\"/login\" method=\"post\">";
 				outputbuf += "Username: <input type=\"text\" name=\"user\" />";
 				outputbuf += "Password: <input type=\"password\" name=\"pass\" />";
@@ -148,7 +148,7 @@ namespace FPBooru
 			Get["/image/{id:int}"] = ctx => {
 				string outputbuf = "";
 				Image img = imgconn.GetImage(Context.Parameters["id"]);
-				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
+				outputbuf += pb.GetHeader(Request);
 				outputbuf += "<div class=\"centerfix\">";
 				foreach (string imagepath in img.imagenames) {
 					outputbuf += "<img class=\"fullimage\" src=\"/static/images/" + imagepath + "\" />";
@@ -167,6 +167,7 @@ namespace FPBooru
 			Get["/tag/{id:int}"] = ctx => {
 				string outputbuf = "";
 				uint page;
+				outputbuf += pb.GetHeader(Request);
 				outputbuf += pb.GetPageIndicator(Request, out page);
 				outputbuf += "<div id=\"mainbody\">";
 				outputbuf += pb.GetImageGrid(imgconn.GetImages(page, this.Context.Parameters["id"]));

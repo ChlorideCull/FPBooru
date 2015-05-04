@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using Nancy;
+using MySql.Data.MySqlClient;
+using System.Linq;
 
 namespace FPBooru
 {
@@ -8,14 +10,17 @@ namespace FPBooru
 	{
 		private string rawHeader;
 		private string rawBottom;
+		private MySqlConnection conn;
 
-		public PageBuilder()
+		public PageBuilder(MySqlConnection mysqlconn)
 		{
+			conn = mysqlconn;
 			rawHeader = File.ReadAllText("template/top.html");
 			rawBottom = File.ReadAllText("template/bottom.html");
 		}
 
-		public string GetHeader(string UserName) {
+		public string GetHeader(Request rqst) {
+			string UserName = Auth.GetUserFromSessionCookie(rqst.Headers["SeSSION"].FirstOrDefault(), conn);
 			string tmp = rawHeader;
 			if (UserName != null)
 				tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"noButton\" href=\"/user/" + UserName + "\">Hello, " + UserName + "!</a>");
