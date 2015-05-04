@@ -97,7 +97,7 @@ namespace FPBooru
 				outputbuf += pb.GetBottom();
 				return Negotiate
 					.WithContentType("text/html")
-					.WithHeader("cache-control", "public, max-age=60")
+					.WithHeader("cache-control", "public, s-maxage=30, max-age=5")
 					.WithView("dummy.rawhtml")
 					.WithModel(outputbuf);
 			};
