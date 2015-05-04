@@ -267,7 +267,7 @@ namespace FPBooru
 
 				if ((ourid != 0) && !failed) {
 					string outputbuf = "";
-					outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
+					outputbuf += pb.GetHeader(Request);
 					outputbuf += "<div class=\"interstial\">";
 					outputbuf += "<h1>Upload complete!</h1>";
 					outputbuf += "You can view your image <a href=\"/image/" + ourid + "\">here</a>.";
@@ -284,7 +284,7 @@ namespace FPBooru
 						.WithModel(outputbuf);
 				} else {
 					string outputbuf = "";
-					outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
+					outputbuf += pb.GetHeader(Request);
 					outputbuf += "<div class=\"interstial\">";
 					outputbuf += "<h1>There was an error uploading your image!</h1>";
 					outputbuf += "If you believe there is something wrong with the server, contact an admin with the log below.<br />";
@@ -310,7 +310,7 @@ namespace FPBooru
 
 			Get["/upload"] = ctx => {
 				string outputbuf = "";
-				outputbuf += pb.GetHeader(Auth.GetUserFromSessionCookie(this.Request.Headers["SeSSION"].FirstOrDefault(), conn));
+				outputbuf += pb.GetHeader(Request);
 				outputbuf += "<div class=\"interstial\">";
 				outputbuf += "<form action=\"/upload\" method=\"post\" enctype=\"multipart/form-data\">";
 				outputbuf += "Currently supported files are: GIF, JPG, PNG, SVG and WebP<br />";
