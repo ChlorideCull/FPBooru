@@ -96,7 +96,7 @@ namespace FPBooru
 				outputbuf += pb.GetHeader(Request);
 				outputbuf += "<div class=\"interstial\">";
 				outputbuf += "<h1>The Front Page.</h1>";
-				outputbuf += "The cream of the crop, the best of the best. Community submitted images, voted on by the community.";
+				outputbuf += "The perfect mix of new and popular. See what the site and community has to offer.";
 				outputbuf += "</div>";
 				outputbuf += pb.GetPageIndicator(Request, out page);
 				outputbuf += "<div id=\"mainbody\">";
