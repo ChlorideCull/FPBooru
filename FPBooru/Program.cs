@@ -131,11 +131,12 @@ namespace FPBooru
 					" <a href=\"https://www.gnu.org/licenses/agpl-3.0.txt\">GNU Affero General Public License</a>, and the more" +
 					" permissive <a href=\"http://opensource.org/licenses/MIT\">MIT License</a>. There may be missing features from" +
 					" the MIT release compared to the AGPL release, depending on the programmer who implements the feature, and" +
-					" his/hers license preference. This version is an " + (Program.IsAGPL?"AGPL build.":"MIT build.");
+					" his/hers license preference. This version is an " + (Program.IsAGPL?"AGPL build.":"MIT build.") + " The source" +
+					" is available on <a href=\"https://github.com/ChlorideCull/FPBooru\">GitHub</a>.";
 				outputbuf += pb.GetBottom();
 				return Negotiate
 					.WithContentType("text/html")
-					.WithHeader("cache-control", "public, max-age=300")
+					.WithHeader("cache-control", "public, max-age=18000")
 					.WithView("dummy.rawhtml")
 					.WithModel(outputbuf);
 			};
