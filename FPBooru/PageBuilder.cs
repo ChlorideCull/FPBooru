@@ -49,6 +49,23 @@ namespace FPBooru
 			return output;
 		}
 
+		public string GetTable(string[] headernames, string[][] data) {
+			string output = "<table><tr>";
+			foreach (string header in headernames) {
+				output += "<th>" + header + "</th>";
+			}
+			output += "</tr>";
+			foreach (string[] rowvalue in data) {
+				output += "<tr>";
+				foreach (string value in rowvalue) {
+					output += "<td>" + value + "</td>";
+				}
+				output += "</tr>";
+			}
+			output += "</table>";
+			return output;
+		}
+
 		public string GetPageIndicator(Request rqst, out uint page) {
 			try {
 				page = (rqst.Query.page ?? 0);

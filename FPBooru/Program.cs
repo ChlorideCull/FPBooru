@@ -20,6 +20,14 @@ namespace FPBooru
 	{
 		public static Uri OurHost = new Uri("http://192.168.56.101:8097");
 
+		#if AGPLRelease
+		public static bool IsAGPL = true;
+		#elif MITRelease
+		public static bool IsAGPL = false;
+		#else
+		#error No license specified! Define either AGPLRelease or MITRelease!
+		#endif
+
 		static void Main(string[] args)
 		{
 			HostConfiguration hc = new HostConfiguration();
@@ -104,6 +112,27 @@ namespace FPBooru
 
 			Get["/about"] = ctx => {
 				string outputbuf = "";
+				outputbuf += pb.GetHeader(Request);
+				outputbuf += "<div class=\"interstial\">";
+				#if DEBUG
+				outputbuf += "<h1>Debug/Developer Information</h1>";
+				outputbuf += pb.GetTable(new [] {"Info", "Value"}, new string[][] {
+					new [] {"Operating System", System.Environment.OSVersion.VersionString},
+					new [] {"Runtime Version", System.Environment.Version.ToString()},
+					new [] {"Is 64 bit?", System.Environment.Is64BitProcess.ToString()},
+					new [] {"Command Line", System.Environment.CommandLine},
+					new [] {"Culture", Thread.CurrentThread.CurrentCulture.EnglishName},
+					new [] {"License", (Program.IsAGPL?"AGPL":"MIT")}
+				});
+				outputbuf += "<br />";
+				#endif
+				outputbuf += "<h1>About</h1>";
+				outputbuf += "FPBooru is dual-licensed, both as free open-source software under the" +
+					" <a href=\"https://www.gnu.org/licenses/agpl-3.0.txt\">GNU Affero General Public License</a>, and the more" +
+					" permissive <a href=\"http://opensource.org/licenses/MIT\">MIT License</a>. There may be missing features from" +
+					" the MIT release compared to the AGPL release, depending on the programmer who implements the feature, and" +
+					" his/hers license preference. This version is an " + (Program.IsAGPL?"AGPL build.":"MIT build.");
+				outputbuf += pb.GetBottom();
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=300")
