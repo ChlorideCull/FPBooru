@@ -243,7 +243,7 @@ namespace FPBooru
 				//Process the file
 				HttpFile file = this.Context.Request.Files.FirstOrDefault();
 				string name = ((long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds) + "_" + (new Random()).Next();
-				System.IO.FileStream mainfile = System.IO.File.Create(System.IO.Path.GetFullPath("static/images/" + name + System.IO.Path.GetExtension(file.Name)));
+				System.IO.FileStream mainfile = System.IO.File.Create(System.IO.Path.GetFullPath("static/images/" + name + System.IO.Path.GetExtension(file.Name).ToLower()));
 
 				file.Value.CopyTo(mainfile);
 				mainfile.Close();
@@ -262,7 +262,7 @@ namespace FPBooru
 						System.IO.Path.GetFullPath("static/images/" + name) + extension,
 						"1920x100", "png", out failed);
 					
-					output += "--> Mogrify reports " + (failed?"that it didn't work. Attempting repairs.":"nothing unusual.") + "\n";
+					output += "--> ImageMagick reports " + (failed?"that it didn't work. Attempting repairs.":"nothing unusual.") + "\n";
 					if (failed) {
 						output += FileIO.RepairImage(System.IO.Path.GetFullPath("static/images/" + name) + extension, out failed);
 						if (failed) {

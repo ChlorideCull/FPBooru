@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Diagnostics;
 using System.Threading;
 
@@ -8,12 +9,17 @@ namespace FPBooru {
 			ProcessStartInfo psi;
 			Process ps;
 			string output = "";
+			if (Path.GetExtension(infile) == ".gif")
+				infile = Path.ChangeExtension(infile, ".gif[0]");
 			if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
-				psi = new ProcessStartInfo("mogrify.exe");
-				psi.Arguments = "-path " + outpath + " -thumbnail " + res + "^^ -gravity center -extent " + res + " -format " + format + " " + infile;
+				psi = new ProcessStartInfo("convert.exe");
+				psi.Arguments = infile + " -thumbnail " + res + "^^ -gravity center -extent " + res + " " +
+					System.IO.Path.Combine(outpath, System.IO.Path.ChangeExtension(System.IO.Path.GetFileName(infile), "." + format));
 			} else {
-				psi = new ProcessStartInfo("mogrify");
-				psi.Arguments = "-path \"" + outpath + "\" -thumbnail " + res + "^ -gravity center -extent " + res + " -format " + format + " \"" + infile + "\"";
+				psi = new ProcessStartInfo("convert");
+				psi.Arguments = "\"" + infile + "\" -thumbnail " + res + "^ -gravity center -extent " + res + " \"" +
+					System.IO.Path.Combine(outpath, System.IO.Path.ChangeExtension(System.IO.Path.GetFileName(infile), "." + format)) +
+					"\"";
 			}
 			psi.RedirectStandardError = true;
 			psi.UseShellExecute = false;
