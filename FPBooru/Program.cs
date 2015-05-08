@@ -281,8 +281,11 @@ namespace FPBooru
 				output += "--> Tags registered as \"" + tagstring + "\"\n";
 				List<long> tags = new List<long>();
 				foreach (string tagname in tagstring.Split(new [] {','}, StringSplitOptions.RemoveEmptyEntries)) {
-					tags.Add(imgconn.ResolveTagID(tagname.Trim(), true));
-					output += "---> Tag \"" + tagname + "\" was given ID " + tags.Last() + ".\n";
+					string tagnamepretty = tagname.Trim();
+					if (tagnamepretty == "")
+						continue;
+					tags.Add(imgconn.ResolveTagID(tagnamepretty, true));
+					output += "---> Tag \"" + tagnamepretty + "\" was given ID " + tags.Last() + ".\n";
 				}
 
 				long ourid = 0;

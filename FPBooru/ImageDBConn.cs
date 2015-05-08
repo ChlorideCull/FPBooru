@@ -17,7 +17,7 @@ namespace FPBooru
 			addImageCmd = new MySqlCommand("INSERT INTO fpbooru.images (thumbnailimg, imagepath_csv, tagids_csv, time_created, time_updated) VALUES (@thumbnailimg, @images, @tagids, UTC_TIMESTAMP(), UTC_TIMESTAMP());", conn);
 			getImageCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv FROM fpbooru.images WHERE id = @id;", conn);
 			getImagesCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv FROM fpbooru.images ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
-			addTagCmd = new MySqlCommand("INSERT INTO fpbooru.tags (imageids_csv, name) VALUES (``, @name);", conn);
+			addTagCmd = new MySqlCommand("INSERT INTO fpbooru.tags (imageids_csv, name) VALUES ('', @name);", conn);
 			resolveTagCmd = new MySqlCommand("SELECT id FROM fpbooru.tags WHERE name=@nom;", conn);
 			getImageByTagsCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv FROM fpbooru.images WHERE tagids_csv REGEXP @regex ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
 
@@ -94,6 +94,7 @@ namespace FPBooru
 				if (red.Read()) {
 					return red.GetUInt32(red.GetOrdinal("id"));
 				} else if (createifnotfound) {
+					red.Close();
 					return AddTag(tagname);
 				} else {
 					return -1;
