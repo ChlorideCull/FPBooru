@@ -69,7 +69,7 @@ namespace FPBooru
 		public string GetPageIndicator(Request rqst, out uint page) {
 			try {
 				page = (rqst.Query.page ?? 0);
-			} catch (InvalidCastException _) {
+			} catch (InvalidCastException) {
 				page = 0;
 			}
 			string output = "";
