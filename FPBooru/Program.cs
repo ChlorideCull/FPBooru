@@ -277,7 +277,13 @@ namespace FPBooru
 					}
 				}
 
-				output += "--> Tags registered as " + this.Context.Request.Form["tags"].Value + "\n";
+				string tagstring = pb.Sanitize(Context.Request.Form["tags"].Value);
+				output += "--> Tags registered as \"" + tagstring + "\"\n";
+				List<long> tags = new List<long>();
+				foreach (string tagname in tagstring.Split(new [] {','}, StringSplitOptions.RemoveEmptyEntries)) {
+					tags.Add(imgconn.ResolveTagID(tagname.Trim(), true));
+					output += "---> Tag \"" + tagname + "\" was given ID " + tags.Last() + ".\n";
+				}
 
 				long ourid = 0;
 				if (!failed) {
@@ -285,9 +291,9 @@ namespace FPBooru
 					Image img = new Image();
 					img.imagenames = new string[] {name + System.IO.Path.GetExtension(file.Name)};
 					img.thumbnailname = name + ".jpg";
-					img.tagids = new long[] {};
+					img.tagids = tags.ToArray();
 					ourid = imgconn.AddImage(img);
-					output += "--> Image registered in database as ID " + ourid + "\n";
+					output += "--> Image registered in database as ID " + ourid + ".\n";
 				} else {
 					#if DEBUG
 					output += "--> File is named " + name + System.IO.Path.GetExtension(file.Name);
@@ -304,10 +310,13 @@ namespace FPBooru
 					outputbuf += "<h1>Upload complete!</h1>";
 					outputbuf += "You can view your image <a href=\"/image/" + ourid + "\">here</a>.";
 
+					#if DEBUG
 					outputbuf += "<br />";
 					outputbuf += "Guru Meditation: <br /><pre>";
 					outputbuf += output;
-					outputbuf += "</pre></div>";
+					outputbuf += "</pre>";
+					#endif
+					outputbuf += "</div>";
 					outputbuf += pb.GetBottom();
 					return Negotiate
 						.WithContentType("text/html")

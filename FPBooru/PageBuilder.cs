@@ -87,6 +87,12 @@ namespace FPBooru
 			return "<input type=\"text\" name=\"tags\" class=\"tageditor-field\" value=\"" + prefilledTags + "\" placeholder=\"Tags\" " +
 				(ReadOnly?"readonly=\"readonly\"":"") + " />";
 		}
+
+		public string Sanitize(string input) {
+			return input
+				.Replace("<", "&lt;")
+				.Replace(">", "&gt;");
+		}
 	}
 }
 
