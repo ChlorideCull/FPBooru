@@ -277,6 +277,8 @@ namespace FPBooru
 					}
 				}
 
+				output += "--> Tags registered as " + this.Context.Request.Form["tags"].Value + "\n";
+
 				long ourid = 0;
 				if (!failed) {
 					//Add to the database, resolve tags, create them if not found.

@@ -84,7 +84,7 @@ namespace FPBooru
 		}
 
 		public string CreateTagEditor(string prefilledTags, bool ReadOnly) {
-			return "<input type=\"text\" class=\"tageditor-field\" value=\"" + prefilledTags + "\" placeholder=\"Tags\" " +
+			return "<input type=\"text\" name=\"tags\" class=\"tageditor-field\" value=\"" + prefilledTags + "\" placeholder=\"Tags\" " +
 				(ReadOnly?"readonly=\"readonly\"":"") + " />";
 		}
 	}
