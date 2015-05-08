@@ -20,34 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 $(function () {
-    var renderItems = function (elem) {
-        $(elem).children(".tag-item").remove();
-        var readonly = ($(elem.children["tags"]).attr("readonly") != undefined);
+    var renderItems = function (taged, elem) {
+        taged.children(".tag-item").remove();
+        var readonly = ($(elem).attr("readonly") != undefined);
 
-        $.each(elem.children["tags"].value.split(","), function (index, val) {
+        $.each(elem.value.split(","), function (index, val) {
             if (val.trim() === "") return;
             $("<div class=\"tag-item\" />").append(
             $("<span />").text(val.trim())).append(
             readonly ? $("<a href=\"#\"></a>").text("(0)") : $("<a href=\"#\">X</a>").click(function (eObj) {
-                var formval = elem.children["tags"].value;
-                elem.children["tags"].value = formval.substr(0, formval.indexOf(val.trim())) + formval.substr(formval.indexOf(val.trim()) + val.trim().length + 2, formval.length);
-                renderItems(elem);
+                var formval = elem.value;
+                elem.value = formval.substr(0, formval.indexOf(val.trim())) + formval.substr(formval.indexOf(val.trim()) + val.trim().length + 2, formval.length);
+                renderItems(taged, elem);
             })).attr("style", (function (tagcont) {
                 if (tagcont.substring(0, 8) == "creator:") return "box-shadow: 0px 3px #E96D01; background-color: #E86C00;";
                 else return "box-shadow: 0px 3px #01BB2A; background-color: #00BA29;";
-            })(val.trim())).appendTo($(elem));
+            })(val.trim())).appendTo(taged);
         });
         if (!readonly) {
-            $(elem).append($("<div class=\"tag-item tag-item-adder\">+</div>").click(function (eObj) {
+            taged.append($("<div class=\"tag-item tag-item-adder\">+</div>").click(function (eObj) {
                 eObj.onclick = function () {}; //Prevent multiple instances
                 eObj.target.innerHTML = "";
                 $(eObj.target).append($("<form />").submit(function (eObj2) {
-                    elem.children["tags"].value += eObj2.target[0].value + ", ";
+                    elem.value += eObj2.target[0].value + ", ";
                     eObj.target.innerText = "+";
-                    renderItems(elem);
+                    renderItems(taged, elem);
                     return false;
                 }).append($("<input />").focusout(function () {
-                    renderItems(elem);
+                    renderItems(taged, elem);
                 })));
                 setTimeout(function () {
                     $(eObj.target).children("form")[0][0].focus();
@@ -56,8 +56,8 @@ $(function () {
         }
     };
 
-    $("div.tageditor").each(function (index, elem) {
-        elem.children["tags"].setAttribute("style", "display: none;");
-        renderItems(elem);
+    $("input.tageditor-field").each(function (index, elem) {
+        elem.setAttribute("style", "display: none;");
+        renderItems($("<div class=\"tageditor\">").insertAfter($(elem)), elem);
     });
 });

@@ -347,10 +347,11 @@ namespace FPBooru
 				outputbuf += "<label for=\"img\">File:</label>";
 				outputbuf += "<input type=\"file\" name=\"img\" accept=\"image/gif,image/jpeg,image/png,image/svg+xml,image/webp\" /><br />";
 				outputbuf += "<label for=\"tags\">Tags:</label>";
-				outputbuf += "<input type=\"text\" name=\"tags\" /><br />";
+				outputbuf += pb.CreateTagEditor("", false);
 				outputbuf += "<input type=\"submit\" value=\"Upload\" />";
 				outputbuf += "</form>";
 				outputbuf += "</div>";
+				outputbuf += pb.GetBottom();
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=86400")
