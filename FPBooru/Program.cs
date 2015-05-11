@@ -175,7 +175,7 @@ namespace FPBooru
 				}
 			};
 
-			Get["/image/{id:int}"] = ctx => {
+			Get["/image/{id:long}"] = ctx => {
 				string outputbuf = "";
 				Image img = imgconn.GetImage(Context.Parameters["id"]);
 				outputbuf += pb.GetHeader(Request);
@@ -198,13 +198,13 @@ namespace FPBooru
 					.WithModel(outputbuf);
 			};
 
-			Get["/tag/{id:int}"] = ctx => {
+			Get["/tag/{id:long}"] = ctx => {
 				string outputbuf = "";
 				uint page;
 				outputbuf += pb.GetHeader(Request);
 				outputbuf += pb.GetPageIndicator(Request, out page);
 				outputbuf += "<div id=\"mainbody\">";
-				outputbuf += pb.GetImageGrid(imgconn.GetImages(page, this.Context.Parameters["id"]));
+				outputbuf += pb.GetImageGrid(imgconn.GetImages(page, new long[] {this.Context.Parameters["id"]}));
 				outputbuf += "</div>";
 				return Negotiate
 					.WithContentType("text/html")
