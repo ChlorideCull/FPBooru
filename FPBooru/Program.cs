@@ -185,6 +185,10 @@ namespace FPBooru
 				}
 				outputbuf += "</div>";
 				outputbuf += "<div class=\"interstial\">";
+				string ourtags = "";
+				foreach (long tagid in img.tagids)
+					ourtags += imgconn.ResolveTag(tagid) + ", ";
+				outputbuf += pb.CreateTagEditor(ourtags, true);
 				outputbuf += "</div>";
 				outputbuf += pb.GetBottom();
 				return Negotiate
@@ -284,7 +288,7 @@ namespace FPBooru
 					string tagnamepretty = tagname.Trim();
 					if (tagnamepretty == "")
 						continue;
-					tags.Add(imgconn.ResolveTagID(tagnamepretty, true));
+					tags.Add(imgconn.ResolveTag(tagnamepretty, true));
 					output += "---> Tag \"" + tagnamepretty + "\" was given ID " + tags.Last() + ".\n";
 				}
 

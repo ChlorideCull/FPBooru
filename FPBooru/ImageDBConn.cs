@@ -12,6 +12,7 @@ namespace FPBooru
 		MySqlCommand getImageByTagsCmd;
 		MySqlCommand addTagCmd;
 		MySqlCommand resolveTagCmd;
+		MySqlCommand resolveTagIDCmd;
 
 		public ImageDBConn(MySqlConnection conn) {
 			addImageCmd = new MySqlCommand("INSERT INTO fpbooru.images (thumbnailimg, imagepath_csv, tagids_csv, time_created, time_updated) VALUES (@thumbnailimg, @images, @tagids, UTC_TIMESTAMP(), UTC_TIMESTAMP());", conn);
@@ -19,6 +20,7 @@ namespace FPBooru
 			getImagesCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv FROM fpbooru.images ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
 			addTagCmd = new MySqlCommand("INSERT INTO fpbooru.tags (imageids_csv, name) VALUES ('', @name);", conn);
 			resolveTagCmd = new MySqlCommand("SELECT id FROM fpbooru.tags WHERE name=@nom;", conn);
+			resolveTagIDCmd = new MySqlCommand("SELECT name FROM fpbooru.tags WHERE id=@theid;", conn);
 			getImageByTagsCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv FROM fpbooru.images WHERE tagids_csv REGEXP @regex ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
 
 			addImageCmd.Prepare();
@@ -26,6 +28,7 @@ namespace FPBooru
 			getImagesCmd.Prepare();
 			addTagCmd.Prepare();
 			resolveTagCmd.Prepare();
+			resolveTagIDCmd.Prepare();
 			getImageByTagsCmd.Prepare();
 		}
 
@@ -87,7 +90,7 @@ namespace FPBooru
 			return IterateImageReader(red);
 		}
 
-		public long ResolveTagID(string tagname, bool createifnotfound) {
+		public long ResolveTag(string tagname, bool createifnotfound) {
 			resolveTagCmd.Parameters.Clear();
 			resolveTagCmd.Parameters.AddWithValue("@nom", tagname);
 			using (MySqlDataReader red = resolveTagCmd.ExecuteReader()) {
@@ -98,6 +101,18 @@ namespace FPBooru
 					return AddTag(tagname);
 				} else {
 					return -1;
+				}
+			}
+		}
+
+		public string ResolveTag(long id) {
+			resolveTagIDCmd.Parameters.Clear();
+			resolveTagIDCmd.Parameters.AddWithValue("@theid", id);
+			using (MySqlDataReader red = resolveTagIDCmd.ExecuteReader()) {
+				if (red.Read()) {
+					return red.GetString(red.GetOrdinal("name"));
+				} else {
+					return "";
 				}
 			}
 		}
