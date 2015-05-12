@@ -94,7 +94,7 @@ namespace FPBooru
 				string outputbuf = "";
 				uint page;
 				outputbuf += pb.GetHeader(Request);
-				outputbuf += "<div class=\"interstial\">";
+				outputbuf += "<div class=\"interstial color-primary\">";
 				outputbuf += "<h1>The Front Page.</h1>";
 				outputbuf += "The perfect mix of new and popular. See what the site and community has to offer.";
 				outputbuf += "</div>";
@@ -113,7 +113,7 @@ namespace FPBooru
 			Get["/about"] = ctx => {
 				string outputbuf = "";
 				outputbuf += pb.GetHeader(Request);
-				outputbuf += "<div class=\"interstial\">";
+				outputbuf += "<div class=\"interstial color-primary\">";
 				#if DEBUG
 				outputbuf += "<h1>Debug/Developer Information</h1>";
 				outputbuf += pb.GetTable(new [] {"Info", "Value"}, new string[][] {
@@ -184,11 +184,14 @@ namespace FPBooru
 					outputbuf += "<img class=\"fullimage\" src=\"/static/images/" + imagepath + "\" />";
 				}
 				outputbuf += "</div>";
-				outputbuf += "<div class=\"interstial\">";
+				outputbuf += "<div class=\"interstial color-contrast2\">";
 				string ourtags = "";
 				foreach (long tagid in img.tagids)
 					ourtags += imgconn.ResolveTag(tagid) + ", ";
-				outputbuf += pb.CreateTagEditor(ourtags, true);
+				outputbuf += pb.GetTable(new string[] {}, new string[][] {
+					new [] {"Tags", pb.CreateTagEditor(ourtags, true)},
+					new [] {"Uploader", "Anonymous"}
+				});
 				outputbuf += "</div>";
 				outputbuf += pb.GetBottom();
 				return Negotiate
@@ -313,7 +316,7 @@ namespace FPBooru
 				if ((ourid != 0) && !failed) {
 					string outputbuf = "";
 					outputbuf += pb.GetHeader(Request);
-					outputbuf += "<div class=\"interstial\">";
+					outputbuf += "<div class=\"interstial color-primary\">";
 					outputbuf += "<h1>Upload complete!</h1>";
 					outputbuf += "You can view your image <a href=\"/image/" + ourid + "\">here</a>.";
 
@@ -333,7 +336,7 @@ namespace FPBooru
 				} else {
 					string outputbuf = "";
 					outputbuf += pb.GetHeader(Request);
-					outputbuf += "<div class=\"interstial\">";
+					outputbuf += "<div class=\"interstial color-primary\">";
 					outputbuf += "<h1>There was an error uploading your image!</h1>";
 					outputbuf += "If you believe there is something wrong with the server, contact an admin with the log below.<br />";
 					outputbuf += "There are a couple of things that you can fix yourself, however.<br />";
@@ -359,13 +362,19 @@ namespace FPBooru
 			Get["/upload"] = ctx => {
 				string outputbuf = "";
 				outputbuf += pb.GetHeader(Request);
-				outputbuf += "<div class=\"interstial\">";
+				outputbuf += "<div class=\"interstial color-contrast2\">";
 				outputbuf += "<form action=\"/upload\" method=\"post\" enctype=\"multipart/form-data\">";
 				outputbuf += "Currently supported files are: GIF, JPG, PNG, SVG and WebP<br />";
-				outputbuf += "<label for=\"img\">File:</label>";
-				outputbuf += "<input type=\"file\" name=\"img\" accept=\"image/gif,image/jpeg,image/png,image/svg+xml,image/webp\" /><br />";
-				outputbuf += "<label for=\"tags\">Tags:</label>";
-				outputbuf += pb.CreateTagEditor("", false) + "<br />";
+				outputbuf += pb.GetTable(new string[] {}, new string[][] {
+					new [] {
+						"<label for=\"img\">File</label>",
+						"<input type=\"file\" name=\"img\" accept=\"image/gif,image/jpeg,image/png,image/svg+xml,image/webp\" /><br />"
+					},
+					new [] {
+						"<label for=\"tags\">Tags</label>",
+						pb.CreateTagEditor("", false) + "<br />"
+					},
+				});
 				outputbuf += "<input type=\"submit\" value=\"Upload\" />";
 				outputbuf += "</form>";
 				outputbuf += "</div>";

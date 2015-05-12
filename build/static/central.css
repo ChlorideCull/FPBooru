@@ -4,6 +4,28 @@
 
 @import url(http://fonts.googleapis.com/css?family=Roboto:300);
 
+/*COLORS*/
+.color-primary {
+	background-color: #0088FF;
+	color: #FFF;
+}
+
+.color-contrast1 {
+	background-color: #0077EE;
+	color: #FFF;
+}
+
+.color-contrast2 {
+	background-color: #26567F;
+	color: #FFF;
+}
+
+.color-contrast3 {
+	background-color: #3271A8;
+	color: #FFF;
+}
+/*END COLORS*/
+
 html, body {
 	margin: 0px;
     min-width: 320px;
@@ -99,8 +121,6 @@ div:not([class*="tag-item"]) > form>input {
     flex-direction: row;
 	flex-wrap: wrap;
 	justify-content: space-between;
-    
-	background-color: #0077EE;
 }
 
 
@@ -141,13 +161,8 @@ div:not([class*="tag-item"]) > form>input {
     height: 160px;
     
 	border: 3px #0077EE solid;
-    
 	border-radius: 5px;
-	
 	text-align: center;
-	
-	background-color: #0088FF;
-	color: #FFF;
     
     margin-left: auto;
     margin-right: auto;
@@ -166,10 +181,8 @@ div.interstial {
     font-family: 'Roboto', sans-serif;
 	font-weight: 400;
     
-    color: #FFF;
-    background-color: #0088FF;
-    border: 10px solid #0088FF;
-    border-radius: 5px;
+    padding: 10px;
+    border-radius: 10px;
 }
 
 div.interstial>h1 {
@@ -217,8 +230,6 @@ div.interstial>h1 {
     display: block;
     text-align: left;
     padding-left: 5px;
-    color: #FFF;
-    background-color: #0077EE;
 }
 
 /* END template.ppcss */
@@ -280,16 +291,4 @@ div.centerfix {
 	display: flex;
     align-items: center;
     flex-direction: column;
-}
-
-/* BEGIN artists.ppcss */
-
-table, table td {
-	border: 1px solid #006DCC;
-}
-table {
-	background-color: #26567F;
-}
-table td {
-	background-color: #3271A8;
 }
