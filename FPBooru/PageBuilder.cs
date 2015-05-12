@@ -31,7 +31,7 @@ namespace FPBooru
 				tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"alignRight\" onclick=\"doLogin()\">Login</a>");
 
 			Random rdgen = new Random();
-			Image[] candidates = imgconn.GetImages(0);
+			Image[] candidates = imgconn.GetImages(rdgen.Next(((int)Math.Ceiling(((double)imgconn.GetImages()) / 16.0))-1));
 			Image ourimage = candidates[rdgen.Next(candidates.Length)];
 			tmp = tmp.Replace("%_-HDRIMG-_%", System.IO.Path.ChangeExtension("/static/headers/" + ourimage.imagenames[rdgen.Next(ourimage.imagenames.Length)], ".png"));
 			return tmp;
