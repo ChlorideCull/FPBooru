@@ -92,7 +92,7 @@ namespace FPBooru
 
 			Get["/"] = ctx => {
 				string outputbuf = "";
-				uint page;
+				long page;
 				outputbuf += pb.GetHeader(Request);
 				outputbuf += "<div class=\"interstial color-primary\">";
 				outputbuf += "<h1>The Front Page.</h1>";
@@ -203,7 +203,7 @@ namespace FPBooru
 
 			Get["/tag/{id:long}"] = ctx => {
 				string outputbuf = "";
-				uint page;
+				long page;
 				outputbuf += pb.GetHeader(Request);
 				outputbuf += pb.GetPageIndicator(Request, out page);
 				outputbuf += "<div id=\"mainbody\">";

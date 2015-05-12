@@ -68,7 +68,7 @@ namespace FPBooru
 			return IterateImageReader(red)[0];
 		}
 
-		public Image[] GetImages(uint page) {
+		public Image[] GetImages(long page) {
 			getImagesCmd.Parameters.Clear();
 			getImagesCmd.Parameters.AddWithValue("@itemmin", 16 * page);
 			getImagesCmd.Parameters.AddWithValue("@itemmax", 16 * (page + 1));
@@ -86,7 +86,7 @@ namespace FPBooru
 			}
 		}
 
-		public Image[] GetImages(uint page, long[] tags) {
+		public Image[] GetImages(long page, long[] tags) {
 			//REGEX Basic: The CSV field always end with a comma. Regex would be tag1,|tag2,|tag3, etc.
 			string regex = "";
 			foreach (int tag in tags)
