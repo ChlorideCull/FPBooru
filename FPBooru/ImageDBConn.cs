@@ -8,6 +8,7 @@ namespace FPBooru
 	{
 		MySqlCommand addImageCmd;
 		MySqlCommand getImageCmd;
+		MySqlCommand getImageCountCmd;
 		MySqlCommand getImagesCmd;
 		MySqlCommand getImageByTagsCmd;
 		MySqlCommand addTagCmd;
@@ -17,6 +18,7 @@ namespace FPBooru
 		public ImageDBConn(MySqlConnection conn) {
 			addImageCmd = new MySqlCommand("INSERT INTO fpbooru.images (thumbnailimg, imagepath_csv, tagids_csv, time_created, time_updated) VALUES (@thumbnailimg, @images, @tagids, UTC_TIMESTAMP(), UTC_TIMESTAMP());", conn);
 			getImageCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv FROM fpbooru.images WHERE id = @id;", conn);
+			getImageCountCmd = new MySqlCommand("SELECT COUNT(*) FROM fpbooru.images;", conn);
 			getImagesCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv FROM fpbooru.images ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
 			addTagCmd = new MySqlCommand("INSERT INTO fpbooru.tags (imageids_csv, name) VALUES ('', @name);", conn);
 			resolveTagCmd = new MySqlCommand("SELECT id FROM fpbooru.tags WHERE name=@nom;", conn);
@@ -25,6 +27,7 @@ namespace FPBooru
 
 			addImageCmd.Prepare();
 			getImageCmd.Prepare();
+			getImageCountCmd.Prepare();
 			getImagesCmd.Prepare();
 			addTagCmd.Prepare();
 			resolveTagCmd.Prepare();
@@ -71,6 +74,16 @@ namespace FPBooru
 			getImagesCmd.Parameters.AddWithValue("@itemmax", 16 * (page + 1));
 			MySqlDataReader red = getImagesCmd.ExecuteReader();
 			return IterateImageReader(red);
+		}
+
+		public long GetImages() {
+			using (MySqlDataReader red = getImageCountCmd.ExecuteReader()) {
+				if (red.Read()) {
+					return red.GetInt64(0);
+				} else {
+					return -1;
+				}
+			}
 		}
 
 		public Image[] GetImages(uint page, long[] tags) {

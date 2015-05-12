@@ -66,18 +66,22 @@ namespace FPBooru
 			return output;
 		}
 
-		public string GetPageIndicator(Request rqst, out uint page) {
+		public string GetPageIndicator(Request rqst, out long page) {
+			long maxpage = (long)Math.Ceiling(((double)imgconn.GetImages()) / 16.0);
 			try {
 				page = (rqst.Query.page ?? 0);
 			} catch (InvalidCastException) {
 				page = 0;
 			}
+			if (page > maxpage)
+				page = maxpage;
+
 			string output = "";
 			output += "<div class=\"centerfix\">";
 			output += "<div class=\"interstial color-contrast1\">";
-			output += (page == 0)?"":"<a href=\"" + rqst.Url.Path + "?page=" + (page-1) + "\">Back</a> ";
+			output += (page == 0)?"":("<a href=\"" + rqst.Url.Path + "?page=" + (page-1) + "\">Back</a> ");
 			output += "<span>Page " + (page+1) + "</span>";
-			output += " <a href=\"" + rqst.Url.Path + "?page=" + (page+1) + "\">Forward</a>";
+			output += (page == maxpage)?"":(" <a href=\"" + rqst.Url.Path + "?page=" + (page+1) + "\">Forward</a>");
 			output += "</div>";
 			output += "</div>";
 			return output;
