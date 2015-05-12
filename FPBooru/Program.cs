@@ -365,7 +365,7 @@ namespace FPBooru
 				outputbuf += "<label for=\"img\">File:</label>";
 				outputbuf += "<input type=\"file\" name=\"img\" accept=\"image/gif,image/jpeg,image/png,image/svg+xml,image/webp\" /><br />";
 				outputbuf += "<label for=\"tags\">Tags:</label>";
-				outputbuf += pb.CreateTagEditor("", false);
+				outputbuf += pb.CreateTagEditor("", false) + "<br />";
 				outputbuf += "<input type=\"submit\" value=\"Upload\" />";
 				outputbuf += "</form>";
 				outputbuf += "</div>";
