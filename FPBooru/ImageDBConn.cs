@@ -71,7 +71,7 @@ namespace FPBooru
 		public Image[] GetImages(long page) {
 			getImagesCmd.Parameters.Clear();
 			getImagesCmd.Parameters.AddWithValue("@itemmin", 16 * page);
-			getImagesCmd.Parameters.AddWithValue("@itemmax", 16 * (page + 1));
+			getImagesCmd.Parameters.AddWithValue("@itemmax", 16);
 			MySqlDataReader red = getImagesCmd.ExecuteReader();
 			return IterateImageReader(red);
 		}
@@ -98,7 +98,7 @@ namespace FPBooru
 			getImageByTagsCmd.Parameters.Clear();
 			getImageByTagsCmd.Parameters.AddWithValue("@regex", regex);
 			getImageByTagsCmd.Parameters.AddWithValue("@itemmin", 16 * page);
-			getImageByTagsCmd.Parameters.AddWithValue("@itemmax", 16 * (page + 1));
+			getImageByTagsCmd.Parameters.AddWithValue("@itemmax", 16);
 			MySqlDataReader red = getImageByTagsCmd.ExecuteReader();
 			return IterateImageReader(red);
 		}
