@@ -67,14 +67,17 @@ namespace FPBooru
 		}
 
 		public string GetPageIndicator(Request rqst, out long page) {
-			long maxpage = (long)Math.Ceiling(((double)imgconn.GetImages()) / 16.0);
+			long maxpage = ((long)Math.Ceiling(((double)imgconn.GetImages()) / 16.0))-1;
 			try {
 				page = (rqst.Query.page ?? 0);
-			} catch (InvalidCastException) {
+			} catch {
 				page = 0;
 			}
+
 			if (page > maxpage)
 				page = maxpage;
+			else if (page < 0)
+				page = 0;
 
 			string output = "";
 			output += "<div class=\"centerfix\">";
