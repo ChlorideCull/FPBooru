@@ -141,15 +141,47 @@ namespace FPBooru
 					.WithModel(outputbuf);
 			};
 
+			Get["/register"] = ctx => {
+				string outputbuf = "";
+
+				outputbuf += pb.GetHeader(Request);
+				outputbuf += "<div class=\"interstial color-contrast2\">";
+				outputbuf += "<form action=\"/register\" method=\"post\" enctype=\"multipart/form-data\">";
+				outputbuf += pb.GetTable(new string[] {}, new string[][] {
+					new [] { "<label for=\"pass\">Username</label>", "<input type=\"text\" name=\"user\" />" },
+					new [] { "<label for=\"pass\">Password</label>", "<input type=\"password\" name=\"pass\" />" },
+					new [] { "<label for=\"passrep\">Repeat Password</label>", "<input type=\"password\" name=\"passrep\" />" },
+					new [] { "<label for=\"email\">EMail</label>", "<input type=\"email\" name=\"email\" />" }
+				});
+				outputbuf += "<input type=\"submit\" value=\"Register\" />";
+				outputbuf += "</form>";
+				outputbuf += "</div>";
+				outputbuf += pb.GetBottom();
+
+				return Negotiate
+					.WithContentType("text/html")
+					.WithHeader("cache-control", "public, max-age=18000")
+					.WithView("dummy.rawhtml")
+					.WithModel(outputbuf);
+			};
+
+			Post["/register"] = ctx => {
+				throw new NotImplementedException("Yarr harr fiddledee, browsing through git history are we?");
+			};
+
 			Get["/login"] = ctx => {
 				string outputbuf = "";
 
 				outputbuf += pb.GetHeader(Request);
-				outputbuf += "<form action=\"/login\" method=\"post\">";
-				outputbuf += "Username: <input type=\"text\" name=\"user\" />";
-				outputbuf += "Password: <input type=\"password\" name=\"pass\" />";
+				outputbuf += "<div class=\"interstial color-contrast2\">";
+				outputbuf += "<form action=\"/login\" method=\"post\" enctype=\"multipart/form-data\">";
+				outputbuf += pb.GetTable(new string[] {}, new string[][] {
+					new [] { "<label for=\"pass\">Username</label>", "<input type=\"text\" name=\"user\" />" },
+					new [] { "<label for=\"pass\">Password</label>", "<input type=\"password\" name=\"pass\" />" }
+				});
 				outputbuf += "<input type=\"submit\" value=\"Login\" />";
 				outputbuf += "</form>";
+				outputbuf += "</div>";
 				outputbuf += pb.GetBottom();
 
 				return Negotiate
@@ -160,18 +192,41 @@ namespace FPBooru
 			};
 
 			Post["/login"] = ctx => {
-				string cookie = Auth.AuthenticateUser(ctx.Request.Form["user"], (new SHA256Managed()).ComputeHash(System.Text.Encoding.UTF8.GetBytes(ctx.Request.Form["pass"])), conn);
+				/* Bug? Mono seems to be confused "`Nancy.DynamicDictionaryValue' does not contain a definition for `Form'"
+				 * yet the /upload POST route seems to work, being written the same way.
+				 * 
+				 * Before:
+				 *      Context.Request.Form["user"].Value
+				 * After:
+				 *      ((DynamicDictionary)Context.Request.Form)["user"].Value
+				 */
+				string cookie = Auth.AuthenticateUser(((DynamicDictionary)Context.Request.Form)["user"].Value, (new SHA256Managed()).ComputeHash(System.Text.Encoding.UTF8.GetBytes(((DynamicDictionary)Context.Request.Form)["pass"].Value)), conn);
 				if (cookie != null) {
+					string outputbuf = pb.GetHeader(Request);
+					outputbuf += "<div class=\"interstial color-contrast2\">";
+					outputbuf += "<h1>Welcome, " + pb.Sanitize(ctx.Request.Form["user"]) + "</h1>";
+					outputbuf += "<a href=\"/\">Return to the front page</a>";
+					outputbuf += "</div>";
+					outputbuf += pb.GetBottom();
 					return Negotiate
 						.WithStatusCode(Nancy.HttpStatusCode.TemporaryRedirect)
 						.WithHeader("Set-Cookie", cookie)
-						.WithHeader("Location", "/")
-						.WithHeader("cache-control", "private, max-age=0, no-store, no-cache");
+						.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
+						.WithView("dummy.rawhtml")
+						.WithModel(outputbuf);
 				} else {
+					string outputbuf = pb.GetHeader(Request);
+					outputbuf += "<div class=\"interstial color-contrast2\">";
+					outputbuf += "<h1>Login failed.</h1>";
+					outputbuf += "<a href=\"/login\">Return to the login page</a><br />";
+					outputbuf += "<a href=\"/register\">Create an account</a><br />";
+					outputbuf += "</div>";
+					outputbuf += pb.GetBottom();
 					return Negotiate
 						.WithStatusCode(Nancy.HttpStatusCode.TemporaryRedirect)
-						.WithHeader("Location", "/login")
-						.WithHeader("cache-control", "private, max-age=0, no-store, no-cache");
+						.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
+						.WithView("dummy.rawhtml")
+						.WithModel(outputbuf);
 				}
 			};
 

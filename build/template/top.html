@@ -38,7 +38,7 @@
     <div id="overlay">
 	   <div id="logbox" class="color-primary">
            <div class="titleBar" class="color-contrast1"><a onclick="noLogin()">X</a></div>
-           <form action="login" method="post">
+           <form action="/login" method="post" enctype="multipart/form-data">
                Username: <input type="text" name="user" />
                Password: <input type="password" name="pass" />
                <input type="submit" value="Login" />
