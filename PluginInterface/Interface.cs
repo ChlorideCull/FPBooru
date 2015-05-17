@@ -30,6 +30,12 @@ namespace PluginInterface {
 		public string Name;
 		public string VersionString;
 		public string URL;
+		public LicenseInfo License;
+	}
+
+	public enum LicenseInfo {
+		MIT,
+		AGPL
 	}
 }
 
