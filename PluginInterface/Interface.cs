@@ -31,11 +31,17 @@ namespace PluginInterface {
 		public string VersionString;
 		public string URL;
 		public LicenseInfo License;
+		public Int32 Permissions;
 	}
 
 	public enum LicenseInfo {
 		MIT,
 		AGPL
+	}
+
+	public enum Permission {
+		HandleAuth = 1,
+		SetUserPins = 1 << 1
 	}
 }
 
