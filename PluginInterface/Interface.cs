@@ -21,7 +21,7 @@ namespace PluginInterface {
 		/// Attempt to Authenticate an User.
 		/// </summary>
 		/// <param name="UserName">Provided username</param>
-		/// <param name="Password">Provided password</param>
+		/// <param name="Password">Provided plaintext password</param>
 		/// <returns>Cookie that can be used to automatically authenticate an user, or <c>null</c> if <paramref name="UserName"/>
 		/// or <param name="Password"/> is incorrect.
 		/// </returns>
@@ -35,6 +35,15 @@ namespace PluginInterface {
 		/// <returns>Username of an user, or <c>null</c> if <paramref name="cookie"/> is incorrect.</returns>
 		/// <remarks>Will never get called unless the Permission.HandleAuth is <c>or</c>d into the Permissions in the plugin info</remarks>
 		string GetAuthenticatedUser(string cookie);
+
+		/// <summary>
+		/// Create an account for an user.
+		/// </summary>
+		/// <returns><c>true</c>, if account was created, <c>false</c> otherwise.</returns>
+		/// <param name="UserName">Provided username</param>
+		/// <param name="Password">Provided plaintext Password</param>
+		/// <remarks>Will never get called unless the Permission.HandleAuth is <c>or</c>d into the Permissions in the plugin info</remarks>
+		bool CreateAccount(string UserName, string Password);
 		#endregion
 
 		#region CustomPages
@@ -85,7 +94,7 @@ namespace PluginInterface {
 		public string VersionString;
 		public string URL;
 		public LicenseInfo License;
-		public Int32 Permissions;
+		public byte Permissions;
 	}
 
 	public enum LicenseInfo {
@@ -93,7 +102,8 @@ namespace PluginInterface {
 		AGPL
 	}
 
-	public enum Permission {
+	[Flags]
+	public enum Permission : byte {
 		HandleAuth = 1,
 		UserPins = 1 << 1,
 		CustomPages = 1 << 2

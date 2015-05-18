@@ -56,6 +56,7 @@
     <Compile Include="Image.cs" />
     <Compile Include="RawViewer.cs" />
     <Compile Include="FileIO.cs" />
+    <Compile Include="PluginManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -69,4 +70,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <ProjectReference Include="..\PluginInterface\PluginInterface.csproj">
+      <Project>{5D7FF9FC-BA02-44FD-97BC-08CF981FEE9D}</Project>
+      <Name>PluginInterface</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

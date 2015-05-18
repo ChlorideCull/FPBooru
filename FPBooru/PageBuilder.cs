@@ -12,11 +12,13 @@ namespace FPBooru
 		private string rawBottom;
 		private MySqlConnection conn;
 		private ImageDBConn imgconn;
+		private PluginManager plugman;
 
-		public PageBuilder(MySqlConnection mysqlconn)
+		public PageBuilder(PluginManager pm, MySqlConnection mysqlconn)
 		{
 			conn = mysqlconn;
 			imgconn = new ImageDBConn(mysqlconn);
+			plugman = pm;
 			rawHeader = File.ReadAllText("template/top.html");
 			rawBottom = File.ReadAllText("template/bottom.html");
 		}
@@ -24,7 +26,7 @@ namespace FPBooru
 		public string GetHeader(Request rqst) {
 			string tmp = rawHeader;
 
-			string UserName = Auth.GetUserFromSessionCookie(rqst.Headers["SeSSION"].FirstOrDefault(), conn);
+			string UserName = Auth.GetUserFromSessionCookie(plugman, rqst.Headers["SeSSION"].FirstOrDefault(), conn);
 			if (UserName != null)
 				tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"noButton\" href=\"/user/" + UserName + "\">Hello, " + UserName + "!</a>");
 			else

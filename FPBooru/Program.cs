@@ -77,6 +77,7 @@ namespace FPBooru
 		private MySqlConnection conn;
 		private PageBuilder pb;
 		private ImageDBConn imgconn;
+		private PluginManager plugman;
 
 		private static string MYSQL_IP = "localhost";
 		private static string MYSQL_USER = "root";
@@ -86,9 +87,9 @@ namespace FPBooru
 		{
 			this.conn = new MySqlConnection("Server=" + MYSQL_IP + ";Database=fpbooru;Uid=" + MYSQL_USER + ";Pwd=" + MYSQL_PASS + ";SslMode=Preferred;ConvertZeroDateTime=True;");
 			conn.Open();
-			this.pb = new PageBuilder(conn);
+			this.plugman = new PluginManager(conn);
+			this.pb = new PageBuilder(plugman, conn);
 			this.imgconn = new ImageDBConn(conn);
-
 
 			Get["/"] = ctx => {
 				string outputbuf = "";
@@ -201,7 +202,7 @@ namespace FPBooru
 				 * After:
 				 *      ((DynamicDictionary)Context.Request.Form)["user"].Value
 				 */
-				string cookie = Auth.AuthenticateUser(((DynamicDictionary)Context.Request.Form)["user"].Value, (new SHA256Managed()).ComputeHash(System.Text.Encoding.UTF8.GetBytes(((DynamicDictionary)Context.Request.Form)["pass"].Value)), conn);
+				string cookie = Auth.AuthenticateUser(plugman, ((DynamicDictionary)Context.Request.Form)["user"].Value, (new SHA256Managed()).ComputeHash(System.Text.Encoding.UTF8.GetBytes(((DynamicDictionary)Context.Request.Form)["pass"].Value)), conn);
 				if (cookie != null) {
 					string outputbuf = pb.GetHeader(Request);
 					outputbuf += "<div class=\"interstial color-contrast2\">";
