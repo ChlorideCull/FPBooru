@@ -193,7 +193,8 @@ namespace FPBooru
 
 			Post["/login"] = ctx => {
 				/* Bug? Mono seems to be confused "`Nancy.DynamicDictionaryValue' does not contain a definition for `Form'"
-				 * yet the /upload POST route seems to work, being written the same way.
+				 * yet the /upload POST route seems to work, being written the same way. We circumvent it by casting Form to
+				 * a DynamicDictionary, which it seems to always be.
 				 * 
 				 * Before:
 				 *      Context.Request.Form["user"].Value
