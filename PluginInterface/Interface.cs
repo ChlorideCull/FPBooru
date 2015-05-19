@@ -94,7 +94,7 @@ namespace PluginInterface {
 		public string VersionString;
 		public string URL;
 		public LicenseInfo License;
-		public byte Permissions;
+		public Permission Permissions;
 	}
 
 	public enum LicenseInfo {

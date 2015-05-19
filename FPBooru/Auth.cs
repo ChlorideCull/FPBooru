@@ -19,6 +19,7 @@ namespace FPBooru
 					if ((plugin.GetInformation().Permissions & Permission.HandleAuth) == Permission.HandleAuth)
 						return plugin.CreateAccount(user, password);
 				}
+				return false;
 			} else {
 				MySqlCommand cmd = new MySqlCommand("INSERT INTO fpbooru.usrs (username, password, session) VALUES (@usrnme, @basepassword, @sess)", conn);
 				cmd.Parameters.Clear();
@@ -41,6 +42,7 @@ namespace FPBooru
 					if ((plugin.GetInformation().Permissions & Permission.HandleAuth) == Permission.HandleAuth)
 						return plugin.GetAuthenticatedUser(cookie);
 				}
+				return null;
 			} else {
 				MySqlCommand cmd = new MySqlCommand("SELECT username FROM fpbooru.usrs WHERE session = \"@sess\"", conn);
 				cmd.Parameters.Clear();
@@ -61,6 +63,7 @@ namespace FPBooru
 					if ((plugin.GetInformation().Permissions & Permission.HandleAuth) == Permission.HandleAuth)
 						return plugin.Authenticate(user, password);
 				}
+				return null;
 			} else {
 				byte[] sha256password = (new SHA256Managed()).ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
 				MySqlCommand cmd = new MySqlCommand("SELECT password FROM fpbooru.usrs WHERE username = \"@uname\"", conn);
@@ -92,7 +95,7 @@ namespace FPBooru
 					return sess;
 				}
 				return null;
-				}
+			}
 		}
 
 		public static string ResetSessionCookie(string user, MySqlConnection conn)

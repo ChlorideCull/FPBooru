@@ -202,7 +202,7 @@ namespace FPBooru
 				 * After:
 				 *      ((DynamicDictionary)Context.Request.Form)["user"].Value
 				 */
-				string cookie = Auth.AuthenticateUser(plugman, ((DynamicDictionary)Context.Request.Form)["user"].Value, (new SHA256Managed()).ComputeHash(System.Text.Encoding.UTF8.GetBytes(((DynamicDictionary)Context.Request.Form)["pass"].Value)), conn);
+				string cookie = Auth.AuthenticateUser(plugman, ((DynamicDictionary)Context.Request.Form)["user"].Value, ((DynamicDictionary)Context.Request.Form)["pass"].Value, conn);
 				if (cookie != null) {
 					string outputbuf = pb.GetHeader(Request);
 					outputbuf += "<div class=\"interstial color-contrast2\">";
