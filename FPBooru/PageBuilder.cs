@@ -30,7 +30,7 @@ namespace FPBooru
 			if (UserName != null)
 				tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"noButton\" href=\"/user/" + UserName + "\">Hello, " + UserName + "!</a>");
 			else
-				tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"alignRight\" onclick=\"doLogin()\">Login</a>");
+				tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"alignRight\" href=\"/login\">Login</a>");
 
 			Random rdgen = new Random();
 			Image[] candidates = imgconn.GetImages(rdgen.Next(((int)Math.Ceiling(((double)imgconn.GetImages()) / 16.0))-1));
