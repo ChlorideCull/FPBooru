@@ -57,15 +57,15 @@ namespace FPBooru
 		}
 
 		public string GetTable(string[] headernames, string[][] data) {
-			string output = "<table class=\"color-contrast2\"><tr>";
+			string output = "<table class=\"color contrast2\"><tr>";
 			foreach (string header in headernames) {
-				output += "<th class=\"color-contrast3\">" + header + "</th>";
+				output += "<th class=\"color contrast3\">" + header + "</th>";
 			}
 			output += "</tr>";
 			foreach (string[] rowvalue in data) {
 				output += "<tr>";
 				foreach (string value in rowvalue) {
-					output += "<td class=\"color-contrast3\">" + value + "</td>";
+					output += "<td class=\"color contrast3\">" + value + "</td>";
 				}
 				output += "</tr>";
 			}
@@ -90,7 +90,7 @@ namespace FPBooru
 
 			string output = "";
 			output += "<div class=\"centerfix\">";
-			output += "<div class=\"interstial color-contrast1\">";
+			output += "<div class=\"interstial color contrast1\">";
 			output += (page == 0)?"":("<a href=\"" + rqst.Url.Path + "?page=" + (page-1) + "\">Back</a> ");
 			output += "<span>Page " + (page+1) + "</span>";
 			output += (page == maxpage)?"":(" <a href=\"" + rqst.Url.Path + "?page=" + (page+1) + "\">Forward</a>");

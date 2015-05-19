@@ -5,24 +5,28 @@
 @import url(http://fonts.googleapis.com/css?family=Roboto:300);
 
 /*COLORS*/
-.color-primary {
+.color.primary {
 	background-color: #0088FF;
 	color: #FFF;
 }
 
-.color-contrast1 {
+.color.contrast1 {
 	background-color: #0077EE;
 	color: #FFF;
 }
 
-.color-contrast2 {
+.color.contrast2 {
 	background-color: #26567F;
 	color: #FFF;
 }
 
-.color-contrast3 {
+.color.contrast3 {
 	background-color: #3271A8;
 	color: #FFF;
+}
+
+.color a {
+	color: inherit;
 }
 /*END COLORS*/
 

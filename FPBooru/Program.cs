@@ -95,7 +95,7 @@ namespace FPBooru
 				string outputbuf = "";
 				long page;
 				outputbuf += pb.GetHeader(Request);
-				outputbuf += "<div class=\"interstial color-primary\">";
+				outputbuf += "<div class=\"interstial color primary\">";
 				outputbuf += "<h1>The Front Page.</h1>";
 				outputbuf += "The perfect mix of new and popular. See what the site and community has to offer.";
 				outputbuf += "</div>";
@@ -114,7 +114,7 @@ namespace FPBooru
 			Get["/about"] = ctx => {
 				string outputbuf = "";
 				outputbuf += pb.GetHeader(Request);
-				outputbuf += "<div class=\"interstial color-primary\">";
+				outputbuf += "<div class=\"interstial color primary\">";
 				#if DEBUG
 				outputbuf += "<h1>Debug/Developer Information</h1>";
 				outputbuf += pb.GetTable(new [] {"Info", "Value"}, new string[][] {
@@ -146,7 +146,7 @@ namespace FPBooru
 				string outputbuf = "";
 
 				outputbuf += pb.GetHeader(Request);
-				outputbuf += "<div class=\"interstial color-contrast2\">";
+				outputbuf += "<div class=\"interstial color contrast2\">";
 				outputbuf += "<form action=\"/register\" method=\"post\" enctype=\"multipart/form-data\">";
 				outputbuf += pb.GetTable(new string[] {}, new string[][] {
 					new [] { "<label for=\"pass\">Username</label>", "<input type=\"text\" name=\"user\" />" },
@@ -174,7 +174,8 @@ namespace FPBooru
 				string outputbuf = "";
 
 				outputbuf += pb.GetHeader(Request);
-				outputbuf += "<div class=\"interstial color-contrast2\">";
+				outputbuf += "<div class=\"interstial color contrast2\">";
+				outputbuf += "<h1>Login or <a href=\"/register\">Register</a></h1>";
 				outputbuf += "<form action=\"/login\" method=\"post\" enctype=\"multipart/form-data\">";
 				outputbuf += pb.GetTable(new string[] {}, new string[][] {
 					new [] { "<label for=\"pass\">Username</label>", "<input type=\"text\" name=\"user\" />" },
@@ -205,7 +206,7 @@ namespace FPBooru
 				string cookie = Auth.AuthenticateUser(plugman, ((DynamicDictionary)Context.Request.Form)["user"].Value, ((DynamicDictionary)Context.Request.Form)["pass"].Value, conn);
 				if (cookie != null) {
 					string outputbuf = pb.GetHeader(Request);
-					outputbuf += "<div class=\"interstial color-contrast2\">";
+					outputbuf += "<div class=\"interstial color contrast2\">";
 					outputbuf += "<h1>Welcome, " + pb.Sanitize(ctx.Request.Form["user"]) + "</h1>";
 					outputbuf += "<a href=\"/\">Return to the front page</a>";
 					outputbuf += "</div>";
@@ -218,7 +219,7 @@ namespace FPBooru
 						.WithModel(outputbuf);
 				} else {
 					string outputbuf = pb.GetHeader(Request);
-					outputbuf += "<div class=\"interstial color-contrast2\">";
+					outputbuf += "<div class=\"interstial color contrast2\">";
 					outputbuf += "<h1>Login failed.</h1>";
 					outputbuf += "<a href=\"/login\">Return to the login page</a><br />";
 					outputbuf += "<a href=\"/register\">Create an account</a><br />";
@@ -241,7 +242,7 @@ namespace FPBooru
 					outputbuf += "<img class=\"fullimage\" src=\"/static/images/" + imagepath + "\" />";
 				}
 				outputbuf += "</div>";
-				outputbuf += "<div class=\"interstial color-contrast2\">";
+				outputbuf += "<div class=\"interstial color contrast2\">";
 				string ourtags = "";
 				foreach (long tagid in img.tagids)
 					ourtags += imgconn.ResolveTag(tagid) + ", ";
@@ -374,7 +375,7 @@ namespace FPBooru
 				if ((ourid != 0) && !failed) {
 					string outputbuf = "";
 					outputbuf += pb.GetHeader(Request);
-					outputbuf += "<div class=\"interstial color-primary\">";
+					outputbuf += "<div class=\"interstial color primary\">";
 					outputbuf += "<h1>Upload complete!</h1>";
 					outputbuf += "You can view your image <a href=\"/image/" + ourid + "\">here</a>.";
 
@@ -394,7 +395,7 @@ namespace FPBooru
 				} else {
 					string outputbuf = "";
 					outputbuf += pb.GetHeader(Request);
-					outputbuf += "<div class=\"interstial color-primary\">";
+					outputbuf += "<div class=\"interstial color primary\">";
 					outputbuf += "<h1>There was an error uploading your image!</h1>";
 					outputbuf += "If you believe there is something wrong with the server, contact an admin with the log below.<br />";
 					outputbuf += "There are a couple of things that you can fix yourself, however.<br />";
@@ -420,7 +421,7 @@ namespace FPBooru
 			Get["/upload"] = ctx => {
 				string outputbuf = "";
 				outputbuf += pb.GetHeader(Request);
-				outputbuf += "<div class=\"interstial color-contrast2\">";
+				outputbuf += "<div class=\"interstial color contrast2\">";
 				outputbuf += "<form action=\"/upload\" method=\"post\" enctype=\"multipart/form-data\">";
 				outputbuf += "Currently supported files are: GIF, JPG, PNG, SVG and WebP<br />";
 				outputbuf += pb.GetTable(new string[] {}, new string[][] {
