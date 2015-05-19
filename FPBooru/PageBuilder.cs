@@ -32,11 +32,16 @@ namespace FPBooru
 			else
 				tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"alignRight\" href=\"/login\">Login</a>");
 
-			Random rdgen = new Random();
-			Image[] candidates = imgconn.GetImages(rdgen.Next(((int)Math.Ceiling(((double)imgconn.GetImages()) / 16.0))-1));
-			Image ourimage = candidates[rdgen.Next(candidates.Length)];
-			tmp = tmp.Replace("%_-HDRIMG-_%", System.IO.Path.ChangeExtension("/static/headers/" + ourimage.imagenames[rdgen.Next(ourimage.imagenames.Length)], ".png"));
-			return tmp;
+			long images = imgconn.GetImages();
+			if (images < 1) {
+				return tmp;
+			} else {
+				Random rdgen = new Random();
+				Image[] candidates = imgconn.GetImages(rdgen.Next(((int)Math.Ceiling(((double)images) / 16.0)) - 1));
+				Image ourimage = candidates[rdgen.Next(candidates.Length)];
+				tmp = tmp.Replace("%_-HDRIMG-_%", System.IO.Path.ChangeExtension("/static/headers/" + ourimage.imagenames[rdgen.Next(ourimage.imagenames.Length)], ".png"));
+				return tmp;
+			}
 		}
 
 		public string GetBottom() {
@@ -76,6 +81,8 @@ namespace FPBooru
 				page = 0;
 			}
 
+			if (maxpage < 0)
+				maxpage = 0;
 			if (page > maxpage)
 				page = maxpage;
 			else if (page < 0)
