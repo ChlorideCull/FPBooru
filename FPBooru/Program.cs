@@ -247,7 +247,7 @@ namespace FPBooru
 					ourtags += imgconn.ResolveTag(tagid) + ", ";
 				outputbuf += pb.GetTable(new string[] {}, new string[][] {
 					new [] {"Tags", pb.CreateTagEditor(ourtags, true)},
-					new [] {"Uploader", "Anonymous"}
+					new [] {"Uploader", img.uploader}
 				});
 				outputbuf += "</div>";
 				outputbuf += pb.GetBottom();
@@ -358,6 +358,7 @@ namespace FPBooru
 					Image img = new Image();
 					img.imagenames = new string[] {name + System.IO.Path.GetExtension(file.Name)};
 					img.thumbnailname = name + ".jpg";
+					img.uploader = (Auth.GetUserFromSessionCookie(plugman, Context.Request.Headers["SeSSION"].FirstOrDefault(), conn) ?? "Anonymous");
 					img.tagids = tags.ToArray();
 					ourid = imgconn.AddImage(img);
 					output += "--> Image registered in database as ID " + ourid + ".\n";

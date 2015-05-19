@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `fpbooru`.`images` (
   `thumbnailimg` VARCHAR(255) NOT NULL,
   `tagids_csv` VARCHAR(255) NOT NULL,
   `imagepath_csv` VARCHAR(255) NOT NULL,
+  `uploader` VARCHAR(255) NOT NULL,
   `time_created` DATETIME NOT NULL,
   `time_updated` DATETIME NOT NULL,
   PRIMARY KEY (`id`),

@@ -16,14 +16,14 @@ namespace FPBooru
 		MySqlCommand resolveTagIDCmd;
 
 		public ImageDBConn(MySqlConnection conn) {
-			addImageCmd = new MySqlCommand("INSERT INTO fpbooru.images (thumbnailimg, imagepath_csv, tagids_csv, time_created, time_updated) VALUES (@thumbnailimg, @images, @tagids, UTC_TIMESTAMP(), UTC_TIMESTAMP());", conn);
-			getImageCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv FROM fpbooru.images WHERE id = @id;", conn);
+			addImageCmd = new MySqlCommand("INSERT INTO fpbooru.images (thumbnailimg, imagepath_csv, tagids_csv, uploader, time_created, time_updated) VALUES (@thumbnailimg, @images, @tagids, @uploader, UTC_TIMESTAMP(), UTC_TIMESTAMP());", conn);
+			getImageCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv, uploader FROM fpbooru.images WHERE id = @id;", conn);
 			getImageCountCmd = new MySqlCommand("SELECT COUNT(*) FROM fpbooru.images;", conn);
-			getImagesCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv FROM fpbooru.images ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
+			getImagesCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv, uploader FROM fpbooru.images ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
 			addTagCmd = new MySqlCommand("INSERT INTO fpbooru.tags (imageids_csv, name) VALUES ('', @name);", conn);
 			resolveTagCmd = new MySqlCommand("SELECT id FROM fpbooru.tags WHERE name=@nom;", conn);
 			resolveTagIDCmd = new MySqlCommand("SELECT name FROM fpbooru.tags WHERE id=@theid;", conn);
-			getImageByTagsCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv FROM fpbooru.images WHERE tagids_csv REGEXP @regex ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
+			getImageByTagsCmd = new MySqlCommand("SELECT id, thumbnailimg, imagepath_csv, tagids_csv, uploader FROM fpbooru.images WHERE tagids_csv REGEXP @regex ORDER BY id DESC LIMIT @itemmin, @itemmax;", conn);
 
 			addImageCmd.Prepare();
 			getImageCmd.Prepare();
@@ -38,6 +38,7 @@ namespace FPBooru
 		public long AddImage(Image img) {
 			addImageCmd.Parameters.Clear();
 			addImageCmd.Parameters.AddWithValue("@thumbnailimg", img.thumbnailname);
+			addImageCmd.Parameters.AddWithValue("@uploader", img.uploader);
 
 			string imagepathcsv = "";
 			foreach (string str in img.imagenames) {
@@ -137,6 +138,7 @@ namespace FPBooru
 				Image tmp = new Image();
 				tmp.id = red.GetInt64(red.GetOrdinal("id"));
 				tmp.thumbnailname = red.GetString(red.GetOrdinal("thumbnailimg"));
+				tmp.uploader = red.GetString(red.GetOrdinal("uploader"));
 				tmp.imagenames = red.GetString(red.GetOrdinal("imagepath_csv")).Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
 				List<long> tmplist = new List<long>();
 				foreach (string i in red.GetString(red.GetOrdinal("tagids_csv")).Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries))
