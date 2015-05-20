@@ -34,6 +34,7 @@ namespace FPBooru
 			hc.UrlReservations.CreateAutomatically = true;
 			#if DEBUG
 			StaticConfiguration.DisableErrorTraces = false;
+			StaticConfiguration.EnableRequestTracing = true;
 			#endif
 			using (var host = new NancyHost(hc, OurHost))
 			{
@@ -167,38 +168,39 @@ namespace FPBooru
 			};
 
 			Post["/register"] = ctx => {
+				string outputbuf = "";
 				string username = ((DynamicDictionary)Context.Request.Form)["user"].Value;
 				string password = ((DynamicDictionary)Context.Request.Form)["pass"].Value;
 				if (password == ((DynamicDictionary)Context.Request.Form)["passrep"].Value) {
 					bool regdone = Auth.RegisterUser(plugman, username, password, conn);
 					if (regdone) {
 						string cookie = Auth.AuthenticateUser(plugman, username, password, conn);
-						string outputbuf = pb.GetHeader(Request);
+						outputbuf += pb.GetHeader(Request);
 						outputbuf += "<div class=\"interstial color contrast2\">";
-						outputbuf += "<h1>Thank you for registering, " + pb.Sanitize(ctx.Request.Form["user"]) + "!</h1>";
+						outputbuf += "<h1>Thank you for registering, " + pb.Sanitize(((DynamicDictionary)Context.Request.Form)["user"].Value) + "!</h1>";
 						outputbuf += "<a href=\"/\">Return to the front page</a>";
 						outputbuf += "</div>";
 						outputbuf += pb.GetBottom();
+						//Gets stuck in Negotiate?
 						return Negotiate
 							.WithHeader("Set-Cookie", cookie)
 							.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
 							.WithView("dummy.rawhtml")
 							.WithModel(outputbuf);
 					}
-				} else {
-					string outputbuf = pb.GetHeader(Request);
-					outputbuf += "<div class=\"interstial color contrast2\">";
-					outputbuf += "<h1>Registration Failed!</h1>";
-					outputbuf += "<a href=\"/register\">Try Again</a> ";
-					outputbuf += "<a href=\"/\">Return to the front page</a>";
-					outputbuf += "</div>";
-					outputbuf += pb.GetBottom();
-					return Negotiate
-						.WithStatusCode(Nancy.HttpStatusCode.InternalServerError)
-						.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
-						.WithView("dummy.rawhtml")
-						.WithModel(outputbuf);
 				}
+				outputbuf += pb.GetHeader(Request);
+				outputbuf += "<div class=\"interstial color contrast2\">";
+				outputbuf += "<h1>Registration Failed!</h1>";
+				outputbuf += "<a href=\"/register\">Try Again</a> ";
+				outputbuf += "<a href=\"/\">Return to the front page</a>";
+				outputbuf += "</div>";
+				outputbuf += pb.GetBottom();
+				return Negotiate
+					.WithStatusCode(Nancy.HttpStatusCode.InternalServerError)
+					.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
+					.WithView("dummy.rawhtml")
+					.WithModel(outputbuf);
 			};
 
 			Get["/login"] = ctx => {

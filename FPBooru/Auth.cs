@@ -26,12 +26,16 @@ namespace FPBooru
 				cmd.Parameters.AddWithValue("@usrnme", user);
 				cmd.Parameters.AddWithValue("@basepassword", Convert.ToBase64String((new SHA256Managed()).ComputeHash(System.Text.Encoding.UTF8.GetBytes(password))));
 				cmd.Parameters.AddWithValue("@sess", rand.Next().ToString());
-				int result = cmd.ExecuteNonQuery();
-				if (result > 0)
-					ResetSessionCookie(user, conn);
-				else
+				try {
+					int result = cmd.ExecuteNonQuery();
+					if (result > 0)
+						ResetSessionCookie(user, conn);
+					else
+						return false;
+					return true;
+				} catch (MySqlException) {
 					return false;
-				return true;
+				}
 			}
 		}
 
