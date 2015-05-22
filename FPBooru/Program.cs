@@ -33,6 +33,10 @@ namespace FPBooru
 			HostConfiguration hc = new HostConfiguration();
 			hc.UrlReservations.CreateAutomatically = true;
 			#if DEBUG
+			hc.UnhandledExceptionCallback = new Action<Exception>((exc)=>{
+				Console.WriteLine(exc);
+				Debugger.Break();
+			});
 			StaticConfiguration.DisableErrorTraces = false;
 			StaticConfiguration.EnableRequestTracing = true;
 			#endif
@@ -175,6 +179,8 @@ namespace FPBooru
 					bool regdone = Auth.RegisterUser(plugman, username, password, conn);
 					if (regdone) {
 						string cookie = Auth.AuthenticateUser(plugman, username, password, conn);
+						if (cookie == null)
+							throw new NullReferenceException("Failed to authenticate with newly registered user");
 						outputbuf += pb.GetHeader(Request);
 						outputbuf += "<div class=\"interstial color contrast2\">";
 						outputbuf += "<h1>Thank you for registering, " + pb.Sanitize(((DynamicDictionary)Context.Request.Form)["user"].Value) + "!</h1>";
