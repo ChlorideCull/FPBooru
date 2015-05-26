@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
-using System.Security.Cryptography;
-using System.Threading;
-using Nancy;
-using Nancy.Hosting.Self;
-using Nancy.ViewEngines;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
+using Nancy;
 using Nancy.Conventions;
+using Nancy.Cookies;
+using Nancy.Hosting.Self;
+using Nancy.ViewEngines;
 
 namespace FPBooru
 {
@@ -189,7 +190,7 @@ namespace FPBooru
 						outputbuf += pb.GetBottom();
 						//Gets stuck in Negotiate?
 						return Negotiate
-							.WithHeader("Set-Cookie", cookie)
+							.WithCookie(new NancyCookie("SeSSION", cookie))
 							.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
 							.WithView("dummy.rawhtml")
 							.WithModel(outputbuf);
@@ -246,12 +247,12 @@ namespace FPBooru
 				if (cookie != null) {
 					string outputbuf = pb.GetHeader(Request);
 					outputbuf += "<div class=\"interstial color contrast2\">";
-					outputbuf += "<h1>Welcome, " + pb.Sanitize(ctx.Request.Form["user"]) + "</h1>";
+					outputbuf += "<h1>Welcome, " + pb.Sanitize(((DynamicDictionary)Context.Request.Form)["user"]) + "</h1>";
 					outputbuf += "<a href=\"/\">Return to the front page</a>";
 					outputbuf += "</div>";
 					outputbuf += pb.GetBottom();
 					return Negotiate
-						.WithHeader("Set-Cookie", cookie)
+						.WithCookie(new NancyCookie("SeSSION", cookie))
 						.WithHeader("cache-control", "private, max-age=0, no-store, no-cache")
 						.WithView("dummy.rawhtml")
 						.WithModel(outputbuf);

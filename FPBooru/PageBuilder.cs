@@ -25,12 +25,17 @@ namespace FPBooru
 
 		public string GetHeader(Request rqst) {
 			string tmp = rawHeader;
+			string usercookie;
 
-			string UserName = Auth.GetUserFromSessionCookie(plugman, rqst.Headers["SeSSION"].FirstOrDefault(), conn);
-			if (UserName != null)
-				tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"noButton\" href=\"/user/" + UserName + "\">Hello, " + UserName + "!</a>");
-			else
+			if (rqst.Cookies.TryGetValue("SeSSION", out usercookie)) {
+				string UserName = Auth.GetUserFromSessionCookie(plugman, usercookie, conn);
+				if (UserName != null)
+					tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"noButton\" href=\"/user/" + UserName + "\">Hello, " + UserName + "!</a>");
+				else
+					tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"alignRight\" href=\"/login\">Login</a>");
+			} else {
 				tmp = tmp.Replace("%_-USRSTATUS-_%", "<a class=\"alignRight\" href=\"/login\">Login</a>");
+			}
 
 			long images = imgconn.GetImages();
 			if (images < 1) {

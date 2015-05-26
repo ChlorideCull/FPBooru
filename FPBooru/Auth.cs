@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using System.Net;
 using PluginInterface;
+using Nancy.Helpers;
 
 namespace FPBooru
 {
@@ -48,12 +49,12 @@ namespace FPBooru
 				}
 				return null;
 			} else {
-				MySqlCommand cmd = new MySqlCommand("SELECT username FROM fpbooru.usrs WHERE session = \"@sess\"", conn);
+				MySqlCommand cmd = new MySqlCommand("SELECT username FROM fpbooru.usrs WHERE session = @sess", conn);
 				cmd.Parameters.Clear();
-				cmd.Parameters.AddWithValue("@sess", cookie);
+				cmd.Parameters.AddWithValue("@sess", HttpUtility.UrlDecode(cookie));
 				using (MySqlDataReader red = cmd.ExecuteReader()) {
-					foreach (string user in red) {
-						return user;
+					while (red.Read()) {
+						return red.GetString(red.GetOrdinal("username"));
 					}
 					return null;
 				}
@@ -69,13 +70,17 @@ namespace FPBooru
 				}
 				return null;
 			} else {
+				Console.WriteLine("no auth plugin");
 				byte[] sha256password = (new SHA256Managed()).ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-				MySqlCommand cmd = new MySqlCommand("SELECT password FROM fpbooru.usrs WHERE username = \"@uname\"", conn);
+				MySqlCommand cmd = new MySqlCommand("SELECT password FROM fpbooru.usrs WHERE username = @uname", conn);
 				cmd.Parameters.Clear();
 				cmd.Parameters.AddWithValue("@uname", user);
 				using (MySqlDataReader red = cmd.ExecuteReader()) {
-					foreach (string pw in red) {
-						if (Convert.FromBase64String(pw) == sha256password) {
+					while (red.Read()) {
+						string pw = red.GetString(red.GetOrdinal("password"));
+						Console.WriteLine(pw + " == " + Convert.ToBase64String(sha256password));
+						if (pw == Convert.ToBase64String(sha256password)) {
+							red.Close();
 							string cookie = GetSessionCookie(user, conn);
 							if (cookie != null) {
 								return cookie;
@@ -95,8 +100,8 @@ namespace FPBooru
 			cmd.Parameters.Clear();
 			cmd.Parameters.AddWithValue("@uname", user);
 			using (MySqlDataReader red = cmd.ExecuteReader()) {
-				foreach (string sess in red) {
-					return sess;
+				while (red.Read()) {
+					return red.GetString(red.GetOrdinal("session"));
 				}
 				return null;
 			}
@@ -108,7 +113,7 @@ namespace FPBooru
 			rand.NextBytes(sess);
 			string cookie = System.Convert.ToBase64String(sess);
 
-			MySqlCommand cmd = new MySqlCommand("UPDATE fpbooru.usrs SET session = \"@sess\" WHERE username = \"@uname\"", conn);
+			MySqlCommand cmd = new MySqlCommand("UPDATE fpbooru.usrs SET session = @sess WHERE username = @uname", conn);
 			cmd.Parameters.Clear();
 			cmd.Parameters.AddWithValue("@uname", user);
 			cmd.Parameters.AddWithValue("@sess", cookie);
