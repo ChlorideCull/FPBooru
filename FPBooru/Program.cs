@@ -34,6 +34,7 @@ namespace FPBooru
 			HostConfiguration hc = new HostConfiguration();
 			hc.UrlReservations.CreateAutomatically = true;
 			#if DEBUG
+			//There is a null reference exception thrown in the NancyHost functions somewhere, but I can't debug it.
 			hc.UnhandledExceptionCallback = new Action<Exception>((exc)=>{
 				Console.WriteLine(exc);
 				Debugger.Break();
@@ -312,8 +313,42 @@ namespace FPBooru
 					.WithModel(outputbuf);
 			};
 
-			Get["/user/{id:string}"] = ctx => {
+			Get["/user/{id}"] = ctx => {
 				string outputbuf = "";
+				outputbuf += pb.GetHeader(Request);
+				outputbuf += "<div class=\"centerfix\">";
+				outputbuf += "<div class=\"interstial color primary user\">" +
+						"<img id=\"userAvatar\" class=\"color contrast2\" src=\"http://www.gravatar.com/avatar/invalid?s=256\" />" +
+						"<div id=\"userPins\" class=\"color contrast2\">" +
+							/*"<div class=\"userPin color-contrast3\">" +
+								"<img src=\"http://i.imgur.com/RDDaGeq.png\" />" +
+								"<div>" +
+									"<h1>root</h1>" +
+									"<h2>I am become shell, destroyer of servers</h2>" +
+									"<p>Has server-level access.</p>" +
+								"</div>" +
+							"</div>" +*/
+					"</div>" +
+					"<div id=\"userData\">" +
+						"<div id=\"userTitle\">" +
+							"<h1>" + pb.Sanitize(ctx.id) + "</h1>" +
+							"<span> @" + pb.Sanitize(ctx.id) + "</span>" +
+						"</div>" +
+						"<hr />" +
+					/*"<table>" +
+							"<tr>" +
+								"<td>Twitter</td>" +
+								"<td>@ChlorideCull</td>" +
+							"</tr>" +
+						"</table>" +
+						"<hr />" +*/
+						"<p id=\"userDesc\">" +
+							"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor\n      in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." +
+						"</p>" +
+					"</div>" +
+				"</div>";
+				outputbuf += "</div>";
+				outputbuf += pb.GetBottom();
 				return Negotiate
 					.WithContentType("text/html")
 					.WithHeader("cache-control", "public, max-age=3600")
